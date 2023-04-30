@@ -4,7 +4,7 @@
 
 ## General Information
 
-This is a software that will perform the validation of continuing education activity statements for members of a professional order.
+This is a software that will perform the validation of continuing education activity statements for members of professional orders.
 
 ## Getting Started
 
