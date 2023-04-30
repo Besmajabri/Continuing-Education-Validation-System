@@ -1,0 +1,20 @@
+Le nombre total de déclarations traitées: 0
+Le nombre total de déclarations complètes: 0
+Le nombre total de déclarations incomplètes ou invalides: 0
+Le nombre total de déclarations faites par des hommes: 0
+Le nombre total de déclarations faites par des femmes: 0
+Le nombre total de déclarations faites par des gens de sexe inconnu: 0
+Le nombre total d'activités dans les déclarations: 0
+Le nombre d'activités de la catégorie Architect: 10
+Le nombre d'activités de la catégorie Psychologue: 10
+Le nombre d'activités de la catégorie Geologue: 10
+Le nombre d'activités de la catégorie Podiatres: 10
+Le nombre total de déclarations valides et complètes par l'ordre des Architect: 0
+Le nombre total de déclarations valides et complètes par l'ordre des Psychologue: 0
+Le nombre total de déclarations valides et complètes par l'ordre des Geologue: 0
+Le nombre total de déclarations valides et complètes par l'ordre des Podiatres: 0
+Le nombre total de déclarations valides et incomplètes par l'ordre des Architect: 0
+Le nombre total de déclarations valides et incomplètes par l'ordre des Psychologue: 0
+Le nombre total de déclarations valides et incomplètes par l'ordre des Geologue: 0
+Le nombre total de déclarations valides et incomplètes par l'ordre des Podiatres: 0
+Le nombre de déclarations soumises avec un numéro de permis invalide: 0

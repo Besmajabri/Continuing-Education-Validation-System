@@ -1,0 +1,8 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+JsonTutorial,default,FichierJsonInvalideException,4,0,0,0,2,0,1,0,1,0
+JsonTutorial,default,Psychologue,123,241,14,26,23,51,14,22,3,13
+JsonTutorial,default,Architecte,102,754,34,122,20,130,27,75,2,22
+JsonTutorial,default,Geologue,207,231,17,42,33,43,13,28,2,9
+JsonTutorial,default,PrincipalPRog,88,0,6,0,26,0,5,0,2,0
+JsonTutorial,default,Statistique,181,579,29,21,41,105,23,16,3,11
+JsonTutorial,default,ActivitesValidation,224,2012,78,202,39,369,71,135,3,60

@@ -1,0 +1,32 @@
+{
+  "numero_de_permis": "A0001",
+  "cycle": "2020-2022",
+  "ordre": "architectes",
+  "heures_transferees_du_cycle_precedent": 2,
+  "activites": [
+    {
+      "description": "Cours sur la déontologie",
+      "categorie": "rédaction professionnelle",
+      "heures": 10,
+      "date": "2021-03-20"
+    },
+    {
+      "description": "Cours sur la déontologie",
+      "categorie": "rédaction professionnelle",
+      "heures": 8,
+      "date": "2021-03-20"
+    },
+    {
+      "description": "Cours sur l'anatomie",
+      "categorie": "groupe de discussion",
+      "heures": 10,
+      "date": "2021-03-19"
+    },
+    {
+      "description": "Cours sur l'anatomie",
+      "categorie": "groupe de discussion",
+      "heures": 8,
+      "date": "2021-03-19"
+    }
+  ]
+}

@@ -1,0 +1,1217 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ActivitesValidation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JsonTutorial</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">ActivitesValidation.java</span></div><h1>ActivitesValidation.java</h1><pre class="source lang-java linenums">import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+import org.apache.commons.io.IOUtils;
+import org.checkerframework.checker.units.qual.A;
+
+import javax.print.DocFlavor;
+
+public class ActivitesValidation {
+
+    //message d'erreur pour la categorie cours de l'ordre geologues
+    public static final String MSG_ERR_COURS_VINGT_DEUX = &quot; Erreur, le nombre &quot;
+            + &quot;d'heures de la catégorie cours dans l'ordre géologues &quot;
+            + &quot;est inférieur à 22&quot;;
+
+    //message d'erreur pour la categorie projet de recherche de l'ordre geologues
+    public static final String MSG_ERR_PROJET_RECHERCHE_TROIS = &quot; Erreur, le &quot;
+            + &quot;nombre d'heures de la categorie projet de recherche dans l'ordre&quot;
+            + &quot; géologues est inférieur à 3&quot;;
+
+    //message d'erreur pour la categorie groupe de discussion de l'ordre geologues
+    public static final String MSG_ERR_GROUPE_DISCUSSION_UN = &quot; Erreur, le &quot;
+            + &quot;nombre d'heures de la categorie groupe de discussion dans &quot;
+            + &quot;l'ordre géologues est inférieur à 1&quot;;
+
+    //liste des sees valides
+<span class="fc" id="L38">    public static final ArrayList&lt;Integer&gt; listeDesSexeValide =</span>
+<span class="fc" id="L39">            new ArrayList&lt;&gt;(Arrays.asList(0, 1, 2));</span>
+
+    // la format des dates ISO8601
+    public static final String DATE_FORMAT_ISO8601 =
+            &quot;([0-9]{4})-([0-9]{2})-([0-9]{2})&quot;;
+
+    // Liste des categories valides
+<span class="fc" id="L46">    public static final ArrayList&lt;String&gt; LISTE_CATEGORIES_VALIDES =</span>
+<span class="fc" id="L47">            new ArrayList&lt;&gt;(Arrays.asList(&quot;cours&quot;, &quot;atelier&quot;, &quot;séminaire&quot;,</span>
+                    &quot;colloque&quot;, &quot;conférence&quot;, &quot;lecture dirigée&quot;));
+
+    //liste des toutes les categories valides pour tous les ordres
+<span class="fc" id="L51">    public static final ArrayList&lt;String&gt; LISTE_TOUTES_CATEGORIES_VALIDES =</span>
+<span class="fc" id="L52">            new ArrayList&lt;&gt;(Arrays.asList(&quot;cours&quot;, &quot;atelier&quot;, &quot;séminaire&quot;,</span>
+                    &quot;colloque&quot;, &quot;conférence&quot;, &quot;lecture dirigée&quot;,
+                    &quot;présentation&quot;, &quot;groupe de discussion&quot;,
+                    &quot;projet de recherche&quot;, &quot;rédaction professionnelle&quot;));
+
+    // liste des champs valides pour le fichier JSON.
+<span class="fc" id="L58">    public static final ArrayList&lt;String&gt; LISTE_CHAMPS_JSONFILE_ARCHITECTE =</span>
+<span class="fc" id="L59">            new ArrayList&lt;&gt;(Arrays.asList(&quot;numero_de_permis&quot;,</span>
+                    &quot;cycle&quot;, &quot;ordre&quot;, &quot;heures_transferees_du_cycle_precedent&quot;,
+                    &quot;nom&quot;, &quot;prenom&quot;, &quot;sexe&quot;, &quot;activites&quot;));
+
+    // liste des champs valides pour le fichier JSON.
+<span class="fc" id="L64">    public static final ArrayList&lt;String&gt; LISTE_CHAMPS_JSONFILE =</span>
+<span class="fc" id="L65">            new ArrayList&lt;&gt;(Arrays.asList(&quot;numero_de_permis&quot;,</span>
+                    &quot;cycle&quot;, &quot;ordre&quot;, &quot;nom&quot;, &quot;prenom&quot;, &quot;sexe&quot;, &quot;activites&quot;));
+
+    //La liste des champs d'activites qui ne doivent etre respectés.
+<span class="fc" id="L69">    public static final ArrayList&lt;String&gt; LISTE_CHAMPS_ACTIVITES =</span>
+<span class="fc" id="L70">            new ArrayList&lt;&gt;(Arrays.asList(&quot;description&quot;, &quot;categorie&quot;,</span>
+                    &quot;heures&quot;, &quot;date&quot;));
+
+    // message d'erreur pour le champs sexe invalide
+    public static final String MSG_ERR_SEXE_INVALIDE =
+            &quot;Le champs sexe est invalide. &quot;
+                    + &quot;Uniquement les valeurs 0, 1 ou 2 sont acceptées dans ce champ.\n&quot;;
+
+    // message d'erreur pour un champs manquant
+    public static final String MSG_ERR_CHAMPS_MANQUANT = &quot;Un champs manquant\n&quot;;
+
+    // message d'erreur pour un numero de permis invalide
+    public static final String MSG_ERR_NUMERO_PERMIS_INVALIDE =
+            &quot;Le numéro de permis est invalide\n&quot;;
+
+    // message d'erreur pour un nombre d'heure negatif
+    public static final String MSG_ERR_NOMBRE_HEURE_NEGATIF =
+            &quot;Les nombres d'heures des activites déclarées doivent être positifs.\n&quot;;
+
+    // message d'erreur pour un fichier d'entrée invalide
+    public static final String MSG_ERR_FICHIER_INVALIDE =
+            &quot;le fichier d'entrée est invalide et le cycle est incomplet.\n&quot;;
+
+    private final String inputFile;
+    private final String outputFile;
+    public JSONObject jsonObj;
+
+
+<span class="fc" id="L98">    public ActivitesValidation(String inputFile) {</span>
+<span class="fc" id="L99">        this.inputFile = inputFile;</span>
+<span class="fc" id="L100">        this.outputFile = null;</span>
+<span class="fc" id="L101">        this.jsonObj = null;</span>
+<span class="fc" id="L102">    }</span>
+
+    /**
+     * Méthode qui obtient le nom du fichier.
+     *
+     * @return le nom du fichier.
+     */
+    public String getInputFile() {
+<span class="nc" id="L110">        return inputFile;</span>
+    }
+
+    /**
+     * Methode pour lire un fichier JSON.
+     *
+     * @throws JSONException si le JSON est invalide
+     */
+    public void chargerFichierJson() throws JSONException, FichierJsonInvalideException {
+        try {
+<span class="fc" id="L120">            String stringJson = IOUtils.toString(new FileInputStream(this.inputFile), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L121">            this.jsonObj = (JSONObject) JSONSerializer.toJSON(stringJson);</span>
+<span class="nc" id="L122">        } catch (FileNotFoundException e) {</span>
+<span class="nc" id="L123">            throw new FichierJsonInvalideException(&quot;Le fichier d'entrée n'existe pas&quot;);</span>
+<span class="nc" id="L124">        } catch (JSONException e) {</span>
+<span class="nc" id="L125">            throw new FichierJsonInvalideException(&quot;Le fichier json n'est pas valide&quot;);</span>
+<span class="nc" id="L126">        } catch (IOException e) {</span>
+<span class="nc" id="L127">            throw new FichierJsonInvalideException(e.toString());</span>
+<span class="fc" id="L128">        }</span>
+<span class="fc" id="L129">    }</span>
+
+
+    /**
+     * Méthode qui extrait différentes données des activités
+     * se trouvant dans le fichier JSON.
+     *
+     * @param indice indice de l'activité ciblée.
+     * @return différentes données des activités se trouvant dans le fichier.
+     */
+    public ArrayList&lt;String&gt; extraireDonnees(int indice) {
+        String date;
+<span class="fc" id="L141">        ArrayList&lt;String&gt; resultats = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L142">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc" id="L143">        resultats.add(0, activites.getJSONObject(indice).getString(&quot;description&quot;));</span>
+<span class="fc" id="L144">        date = activites.getJSONObject(indice).getString(&quot;date&quot;);</span>
+
+<span class="fc bfc" id="L146" title="All 4 branches covered.">        if (!date.isEmpty() &amp;&amp; date.length() == 10) {</span>
+<span class="fc" id="L147">            resultats.add(1, date.substring(0, 4));//EXTRAIT L ANNEE DE L ACTIVITE.</span>
+<span class="fc" id="L148">            resultats.add(2, date.substring(5, 7));//EXTRAIT LE MOIS DE L ACTIVITE.</span>
+<span class="fc" id="L149">            resultats.add(3, date.substring(8)); //EXTRAIT LE JOUR DE L ACTIVITE.</span>
+        }
+<span class="fc" id="L151">        return resultats;</span>
+    }
+
+    /**
+     * Méthode qui vérifie et valide le format ISO8601 d'une date
+     * avec expression régulière.
+     *
+     * @param input la date entree
+     * @return true si elle respcte le format, false sinon
+     */
+    public boolean validerFormatISODate(String input) {
+        boolean checkFormat;
+<span class="fc" id="L163">        checkFormat = input.matches(DATE_FORMAT_ISO8601);</span>
+<span class="fc" id="L164">        return checkFormat;</span>
+    }
+
+
+    /**
+     * Méthode qui vérifie si l'année, le mois et le jour d'une activité sont valides.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerMoisAnneeJour(int indice) {
+<span class="fc" id="L175">        boolean resultat = false;</span>
+<span class="fc" id="L176">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc" id="L177">        String date = activites.getJSONObject(indice).getString(&quot;date&quot;);</span>
+<span class="pc bpc" id="L178" title="2 of 4 branches missed.">        if (!date.isEmpty() &amp;&amp; date.length() == 10) {</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">            if ((validerAnneeDeuxMilleVingt(indice)</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">                    || validerAnneeDeuxMilleVingtUn(indice)</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">                    || validerAnneeDeuxMilleVingtDeux(indice))) {</span>
+<span class="fc" id="L182">                resultat = true;</span>
+            }
+        }
+<span class="fc" id="L185">        return resultat;</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année et le mois d'une activité pour annee 2020.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerAnneeDeuxMilleVingt(int indice) {
+<span class="fc" id="L195">        String mois = extraireDonnees(indice).get(2);</span>
+<span class="fc" id="L196">        String annee = extraireDonnees(indice).get(1);</span>
+<span class="pc bpc" id="L197" title="2 of 6 branches missed.">        return ((!mois.equals(&quot;01&quot;) &amp;&amp; !mois.equals(&quot;02&quot;) &amp;&amp; !mois.equals(&quot;03&quot;)) &amp;&amp;</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">                annee.equals(&quot;2020&quot;));</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année et le mois d'une activité pour annee 2021.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerAnneeDeuxMilleVingtUn(int indice) {
+<span class="fc" id="L208">        String annee = extraireDonnees(indice).get(1);</span>
+<span class="fc" id="L209">        return annee.equals(&quot;2021&quot;);</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année le mois et le jour
+     * d'une activité pour annee 2022 pour l'ordre des architectes.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerAnneeDeuxMilleVingtDeux(int indice) {
+<span class="fc" id="L220">        String annee = extraireDonnees(indice).get(1);</span>
+<span class="fc" id="L221">        String mois = extraireDonnees(indice).get(2);</span>
+<span class="pc bpc" id="L222" title="3 of 4 branches missed.">        return ((mois.equals(&quot;01&quot;) || mois.equals(&quot;02&quot;)</span>
+<span class="nc bnc" id="L223" title="All 4 branches missed.">                || mois.equals(&quot;03&quot;) || (mois.equals(&quot;04&quot;)</span>
+<span class="pc bnc" id="L224" title="All 2 branches missed.">                &amp;&amp; extraireDonnees(indice).get(3).equals(&quot;01&quot;)))</span>
+<span class="pc bpc" id="L225" title="1 of 2 branches missed.">                &amp;&amp; annee.equals(&quot;2022&quot;));</span>
+    }
+
+
+    /**
+     * Méthode qui vérifie et valide les dates extraite.
+     * @return true si la date est valide, False sinon.
+     */
+    public boolean validerDatesExtraite(int indice) {
+<span class="fc" id="L234">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc" id="L235">        String date = activites.getJSONObject(indice).getString(&quot;date&quot;);</span>
+<span class="fc bfc" id="L236" title="All 4 branches covered.">        return date.length() == 10 &amp;&amp; validerFormatISODate(date.substring(0, 10));</span>
+    }
+
+    /**
+     * Méthode qui vérifie si les heures des activités sont
+     * supérieures ou égales à 1.
+     *
+     * @return une ArrayList de toutes les activités invalides
+     * avec leurs messages d'erreur.
+     */
+    public ArrayList&lt;String&gt; validerHeuresActivite() {
+        int heure;
+<span class="fc" id="L248">        ArrayList&lt;String&gt; activitesInformation = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L249">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="fc" id="L251">            heure = activites.getJSONObject(i).getInt(&quot;heures&quot;);</span>
+<span class="fc bfc" id="L252" title="All 4 branches covered.">            if (heure &lt; 1 || heure &gt; 10)</span>
+<span class="fc" id="L253">                activitesInformation.add(&quot;Le nombre d'heures alloue a l'activite &quot;</span>
+<span class="fc" id="L254">                        + activites.getJSONObject(i).getString(&quot;description&quot;)</span>
+                        + &quot; est invalide&quot;);
+        }
+<span class="fc" id="L257">        return activitesInformation;</span>
+    }
+
+
+    /**
+     * methode permet de savoir si 40 heures ont ete declaree dans le cycle
+     *
+     * @return un messages d erreur si on a pas depasse les 40 heures
+     */
+    public String validerNbrHeuresFormation(int seuilMax,
+                                            ArrayList&lt;String&gt; listeActiviteValideSelonCycle, int heureTransfert) {
+        int totalHeures;
+<span class="fc" id="L269">        String resultat = &quot;&quot;;</span>
+<span class="fc" id="L270">        totalHeures = totalHeuresCategoriesValide(listeActiviteValideSelonCycle);</span>
+<span class="fc" id="L271">        totalHeures += heureTransfert;</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">        if (totalHeures &lt; seuilMax)</span>
+<span class="fc" id="L273">            resultat = &quot;Il manque &quot; + (seuilMax - totalHeures)</span>
+                    + &quot; heures de formation pour compléter le cycle.&quot;;
+<span class="fc" id="L275">        return resultat;</span>
+    }
+
+
+    /**
+     * Cette méthode permet de vérifier le nombre d'heures
+     * transferees du cycle precedent Un nombre d'heures transferees du
+     * cycle precedent ne doit pas être négatif et doit être
+     * inférieur ou égale à 7.
+     *
+     * @return nbrHeureTransfere contient 0 si le nombre d'heures transferees du cycle
+     * precedent est négatif, 7 si le nombre est supérieur à ou égale à 7, sino
+     */
+    public int validerHeureTransfertCyclePrec() {
+        int resultat;
+<span class="fc" id="L290">        int heuresTransferees = jsonObj.getInt(&quot;heures_transferees_du_cycle_precedent&quot;);</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        if (heuresTransferees &lt; 0) {</span>
+<span class="fc" id="L292">            resultat = 0;</span>
+<span class="fc" id="L293">        } else resultat = Math.min(heuresTransferees, 7);</span>
+<span class="fc" id="L294">        return resultat;</span>
+    }
+
+    /**
+     * Methode qui envoie une message d'erreur si on a depasse 7h dans le champs
+     * heure transfert du cycle precedent
+     *
+     * @return le message d'erreur a retourner.
+     */
+    public String msgErreurHeureTransfCycleSup() {
+<span class="fc" id="L304">        String resultat = &quot;&quot;;</span>
+        int nbrHeure;
+<span class="fc bfc" id="L306" title="All 2 branches covered.">        if (jsonObj.getString(&quot;ordre&quot;).equals(&quot;architectes&quot;)) {</span>
+<span class="fc" id="L307">            nbrHeure = jsonObj.getInt(&quot;heures_transferees_du_cycle_precedent&quot;);</span>
+        } else {
+<span class="fc" id="L309">            nbrHeure = -1;</span>
+        }
+<span class="fc bfc" id="L311" title="All 4 branches covered.">        if (nbrHeure &gt; 7 || nbrHeure &lt; 0) {</span>
+<span class="fc" id="L312">            resultat = &quot;heures_transferees_du_cycle_precedent est supérieur à 7&quot;;</span>
+        }
+
+<span class="fc" id="L315">        return resultat;</span>
+    }
+    /**
+     * Cette methode retourne le nombre d'heure transfere
+     * selon le cycle précedent exacte.
+     *
+     * @return le nombre d'heure transferes.
+     */
+    public int nombreHeureTransExact (){
+<span class="fc" id="L324">        int nombre = 0;</span>
+<span class="pc bpc" id="L325" title="1 of 2 branches missed.">        if (jsonObj.getString(&quot;ordre&quot;).equals(&quot;architectes&quot;)) {</span>
+<span class="fc" id="L326">            nombre = validerHeureTransfertCyclePrec();</span>
+        }
+<span class="fc" id="L328">        return nombre ;</span>
+    }
+
+
+    /**
+     * Methode permet de savoir si un minimum de 17h a ete fait dans les categories
+     * suivants cours, atelier, séminaire, colloque, conférence, lecture dirigée.
+     *
+     * @return un message d'erreur si le minimum n'a pas ete atteint
+     */
+    public String validerCategoriesSelectionnes(ArrayList&lt;String&gt; listeActiviteValideSelonCycle) {
+<span class="fc" id="L339">        String result = &quot;&quot;;</span>
+<span class="fc" id="L340">        int compteur = nombreHeureTransExact ();</span>
+        String categorie;
+<span class="fc" id="L342">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc bfc" id="L343" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); ++i) {</span>
+<span class="fc" id="L344">            categorie = activites.getJSONObject(i).getString(&quot;categorie&quot;);</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">            if (LISTE_CATEGORIES_VALIDES.contains(categorie)</span>
+<span class="pc bpc" id="L346" title="1 of 2 branches missed.">                    &amp;&amp; !listeActiviteValideSelonCycle.contains(activites.getJSONObject(i).getString(&quot;date&quot;))) {</span>
+<span class="fc" id="L347">                compteur = compteur + Math.min(activites.getJSONObject(i).getInt(&quot;heures&quot;), 10);</span>
+            }
+        }
+<span class="fc bfc" id="L350" title="All 2 branches covered.">        if (compteur &lt; 17) {</span>
+<span class="fc" id="L351">            result = &quot;il manque &quot; + (17 - compteur)</span>
+                    + &quot; h pour atteindre le min de 17h pour la liste des 6 catégories&quot;;
+        }
+<span class="fc" id="L354">        return result;</span>
+    }
+
+
+    /**
+     * Methode qui retourne une liste des messages d'erreurs
+     * pour les cateories invalides.
+     *
+     * @return liste message d'erreur
+     */
+    public ArrayList&lt;String&gt; retournerMssgErrCategInvalid() {
+        String categorie;
+        String description;
+<span class="fc" id="L367">        ArrayList&lt;String&gt; msgErrResultat = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L368">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="fc" id="L370">            categorie = activites.getJSONObject(i).getString(&quot;categorie&quot;);</span>
+<span class="fc" id="L371">            description = activites.getJSONObject(i).getString(&quot;description&quot;);</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">            if (!LISTE_TOUTES_CATEGORIES_VALIDES.contains(categorie)) {</span>
+<span class="fc" id="L373">                msgErrResultat.add(&quot; L'activité &quot; + description + &quot; est dans une&quot; +</span>
+                        &quot; catégorie non reconnue. Elle sera ignorée.&quot;);
+            }
+        }
+<span class="fc" id="L377">        return msgErrResultat;</span>
+    }
+
+    /**
+     * Cette methode permet de valider le nombre d'heures déclarées dans
+     * la catégorie presentation, projet de recherche, groupe de discussion
+     * ou redaction.
+     * &lt;p&gt;
+     * le nombre d'heures déclarées pour les categories presentation
+     * et projet de recherche ne doit pas dépasser 23 heures.
+     * le nombre d'heures déclarées pour les categories groupe de discussion
+     * et redaction ne doit pas dépasser 17 heures.
+     *
+     * @param listeActiviteValideSelonCycle prend une liste contenant les dates des categories valides
+     * @return result contient 17 (ou 23 ) si le nombre d'heures déclarées
+     * pour la categorie groupe de discussion ou redaction (presentation
+     * ou projet de recherche ) est supérieur ou égale à 17 (ou 23 ),
+     * sinon le nombre qui est inférieur à 17 (ou 23 ).
+     */
+    public ArrayList&lt;Integer&gt; validerNbrHeureDeclare(ArrayList&lt;String&gt; listeActiviteValideSelonCycle) {
+<span class="fc" id="L397">        ArrayList&lt;Integer&gt; listeHeureValide = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        for (int i = 0; i &lt; creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).size(); ++i) {</span>
+<span class="fc bfc" id="L399" title="All 2 branches covered.">            if (&quot;présentation&quot;.equals(creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).get(i))</span>
+<span class="fc bfc" id="L400" title="All 2 branches covered.">                    || &quot;projet de recherche&quot;.equals(creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).get(i))) {</span>
+<span class="fc" id="L401">                listeHeureValide.add(Math.min(creerListeDesHeuresCategories(listeActiviteValideSelonCycle).get(i), 23));</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">            } else if (&quot;groupe de discussion&quot;.equals(creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).get(i))</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">                    || &quot;rédaction professionnelle&quot;.equals(creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).get(i))) {</span>
+<span class="fc" id="L404">                listeHeureValide.add(Math.min(creerListeDesHeuresCategories(listeActiviteValideSelonCycle).get(i), 17));</span>
+            } else {
+<span class="fc" id="L406">                listeHeureValide.add(creerListeDesHeuresCategories(listeActiviteValideSelonCycle).get(i));</span>
+            }
+        }
+<span class="fc" id="L409">        return listeHeureValide;</span>
+    }
+
+
+    /**
+     * Cette methode permet de valider le nombre d'heure des catégories et
+     * ajouter le nombre d'heure valide dans une liste.
+     *
+     * @param listeActiviteValideSelonCycle contient la liste des activitees
+     *                                      valides selon le cycle.
+     * @return
+     */
+    public ArrayList&lt;Integer&gt; validerNbrHeureDeclareGeologue(ArrayList&lt;String&gt; listeActiviteValideSelonCycle) {
+<span class="fc" id="L422">        ArrayList&lt;Integer&gt; listeHeureValide = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L423" title="All 2 branches covered.">        for (int i = 0; i &lt; creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).size(); ++i) {</span>
+<span class="fc bfc" id="L424" title="All 2 branches covered.">            if (&quot;cours&quot;.equals(creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).get(i))) {</span>
+<span class="fc" id="L425">                listeHeureValide.add(creerListeDesHeuresCategories(listeActiviteValideSelonCycle).get(i));</span>
+<span class="fc bfc" id="L426" title="All 2 branches covered.">            } else if (&quot;projet de recherche&quot;.equals(creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).get(i))) {</span>
+<span class="fc" id="L427">                listeHeureValide.add(creerListeDesHeuresCategories(listeActiviteValideSelonCycle).get(i));</span>
+<span class="fc bfc" id="L428" title="All 2 branches covered.">            } else if (&quot;groupe de discussion&quot;.equals(creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).get(i))) {</span>
+<span class="fc" id="L429">                listeHeureValide.add(creerListeDesHeuresCategories(listeActiviteValideSelonCycle).get(i));</span>
+            } else {
+<span class="fc" id="L431">                listeHeureValide.add(creerListeDesHeuresCategories(listeActiviteValideSelonCycle).get(i));</span>
+            }
+        }
+<span class="fc" id="L434">        return listeHeureValide;</span>
+    }
+
+
+    /**
+     * Methode pour valider le nombre heures dans la somme des activites selon l'ordre de cycle Psychologue
+     * ordre : Psychologue
+     * minimum 25 heures pour cours
+     * maximum 15 h pour conference
+     *
+     * @param listeActiviteValideSelonCycle la liste contenant les dates des activites valides
+     * @return une liste des sommes des heures de chaque activite valide ensemble
+     */
+    public ArrayList&lt;Integer&gt; validerNbrHeureDeclarePsychologue(ArrayList&lt;String&gt; listeActiviteValideSelonCycle) {
+<span class="fc" id="L448">        ArrayList&lt;Integer&gt; listeHeureValide = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">        for (int i = 0; i &lt; creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).size(); ++i) {</span>
+<span class="fc bfc" id="L450" title="All 2 branches covered.">            if (&quot;cours&quot;.equals(creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).get(i))) {</span>
+<span class="fc" id="L451">                listeHeureValide.add(creerListeDesHeuresCategories(listeActiviteValideSelonCycle).get(i));</span>
+<span class="fc bfc" id="L452" title="All 2 branches covered.">            } else if (&quot;conférence&quot;.equals(creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).get(i))) {</span>
+<span class="fc" id="L453">                listeHeureValide.add(Math.min(creerListeDesHeuresCategories(listeActiviteValideSelonCycle).get(i), 15));</span>
+            } else {
+<span class="fc" id="L455">                listeHeureValide.add(creerListeDesHeuresCategories(listeActiviteValideSelonCycle).get(i));</span>
+            }
+        }
+<span class="fc" id="L458">        return listeHeureValide;</span>
+    }
+
+    /**
+     * Methode qui cree une liste **sans duplication** des categories dont les dates sont valides
+     *
+     * @param listeActiviteValideSelonCycle prend une liste contenant les dates des categories valides
+     * @return la liste non dubliquee contenant les categories valides
+     */
+    public List&lt;String&gt; creerListeDesCategoriesNonDuplique(ArrayList&lt;String&gt; listeActiviteValideSelonCycle) {
+<span class="fc" id="L468">        ArrayList&lt;String&gt; resultat = new ArrayList&lt;&gt;();</span>
+        List&lt;String&gt; nouvelleListe;
+<span class="fc" id="L470">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc bfc" id="L471" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="pc bpc" id="L472" title="1 of 2 branches missed.">            if (!listeActiviteValideSelonCycle.contains(activites.getJSONObject(i).getString(&quot;date&quot;))) {</span>
+<span class="fc" id="L473">                resultat.add(activites.getJSONObject(i).getString(&quot;categorie&quot;));</span>
+            }
+        }
+<span class="fc" id="L476">        nouvelleListe = resultat.stream().distinct().collect(Collectors.toList());</span>
+<span class="fc" id="L477">        return nouvelleListe;</span>
+    }
+
+    /**
+     * methode qui retourne une liste cpntenant les sommes des categories de meme nom et verifie en meme temps si
+     * le'heure est supperieur a 10, si oui elle prend que 10 et
+     * l'addditionne avec l'aheure de la categorie qui la ressemble au nom
+     *
+     * @return la liste contenant les heures additionné et qui correspondant a la categorie
+     */
+    public ArrayList&lt;Integer&gt; creerListeDesHeuresCategories(ArrayList&lt;String&gt; listeActiviteValideSelonCycle) {
+<span class="fc" id="L488">        ArrayList&lt;Integer&gt; resultat = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L489" title="All 2 branches covered.">        for (int i = 0; i &lt; creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).size(); i++) {</span>
+<span class="fc" id="L490">            resultat.add(calculerNbrHeuresCategorie(creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).get(i), listeActiviteValideSelonCycle));</span>
+        }
+<span class="fc" id="L492">        return resultat;</span>
+    }
+
+    /**
+     * Methode qui calcul le nombre d'heures d'une categorie donnee
+     * (cours, groupe de discussion, projet de recherche)
+     *
+     * @param categorie (cours, groupe de discussion, projet de recherche)
+     * @return le nombre d'heure de la categorie passee en param
+     */
+    public int calculerNbrHeuresCategorie(String categorie, ArrayList&lt;String&gt; listeActiviteValideSelonCycle) {
+<span class="fc" id="L503">        int resultat = 0;</span>
+        int heure ;
+        String categorieFic;
+<span class="fc" id="L506">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc bfc" id="L507" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="fc" id="L508">            categorieFic = activites.getJSONObject(i).getString(&quot;categorie&quot;);</span>
+<span class="fc" id="L509">            heure = activites.getJSONObject(i).getInt(&quot;heures&quot;);</span>
+<span class="pc bpc" id="L510" title="1 of 4 branches missed.">            if (categorieFic.equals(categorie) &amp;&amp; heure &gt;= 0</span>
+<span class="pc bpc" id="L511" title="1 of 2 branches missed.">                    &amp;&amp; !listeActiviteValideSelonCycle.contains(categorieFic)) {</span>
+<span class="fc" id="L512">                resultat += Math.min(heure, 10);</span>
+            }
+        }
+<span class="fc" id="L515">        return resultat;</span>
+    }
+
+
+    /**
+     * Methode qui fait la somme des elements int de la liste
+     * pour retourner un total d'heures
+     *
+     * @return total d'heures de la liste
+     */
+    public int totalHeuresCategoriesValide(ArrayList&lt;String&gt; listeActiviteValideSelonCycle) {
+<span class="fc" id="L526">        int resultat = 0;</span>
+<span class="fc" id="L527">        String ordre = jsonObj.getString(&quot;ordre&quot;);</span>
+<span class="fc" id="L528">        ArrayList&lt;Integer&gt; listHeures = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L529" title="All 2 branches covered.">        if (ordre.equals(&quot;architectes&quot;)) {</span>
+<span class="fc" id="L530">            listHeures = validerNbrHeureDeclare(listeActiviteValideSelonCycle);</span>
+<span class="pc bpc" id="L531" title="1 of 4 branches missed.">        } else if (ordre.equals(&quot;géologues&quot;) || ordre.equals(&quot;podiatres&quot;)) {</span>
+<span class="fc" id="L532">            listHeures = validerNbrHeureDeclareGeologue(listeActiviteValideSelonCycle);</span>
+<span class="pc bpc" id="L533" title="1 of 2 branches missed.">        } else if (ordre.equals(&quot;psychologues&quot;)) {</span>
+<span class="fc" id="L534">            listHeures = validerNbrHeureDeclarePsychologue(listeActiviteValideSelonCycle);</span>
+        }
+<span class="fc bfc" id="L536" title="All 2 branches covered.">        for (int i = 0; i &lt; creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).size(); i++) {</span>
+<span class="fc bfc" id="L537" title="All 2 branches covered.">            if (LISTE_TOUTES_CATEGORIES_VALIDES.contains(creerListeDesCategoriesNonDuplique(listeActiviteValideSelonCycle).get(i))) {</span>
+<span class="fc" id="L538">                resultat += listHeures.get(i);</span>
+            }
+        }
+<span class="fc" id="L541">        return resultat;</span>
+    }
+
+    /**
+     * Cette methode permet de calculer la somme des heures des categorie
+     * donnés dans une liste.
+     *
+     * @return retourne la liste des sommes des nombres
+     * d'heures des 3 categories.
+     */
+    public ArrayList&lt;Integer&gt; calculerTotalSommeTroisCategorie() {
+<span class="fc" id="L552">        ArrayList&lt;Integer&gt; sortie = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L553">        ArrayList&lt;String&gt; listeTroisCategorie = new ArrayList&lt;&gt;(Arrays.asList(</span>
+                &quot;cours&quot;, &quot;projet de recherche&quot;, &quot;groupe de discussion&quot;));
+
+<span class="fc bfc" id="L556" title="All 2 branches covered.">        for (int i = 0; i &lt; listeTroisCategorie.size(); i++) {</span>
+<span class="fc" id="L557">            sortie.add(calculerTotalCategorieDonee(listeTroisCategorie.get(i)));</span>
+        }
+
+<span class="fc" id="L560">        return sortie;</span>
+    }
+
+    /**
+     * Cette methode permet de calculer le nombre d'heure total d'une
+     * categorie donne en parametres.
+     *
+     * @param categorieATester la categorie dont on veut calculer le total d'heure.
+     * @return la somme d'heure d'une categorie donnee.
+     */
+    public int calculerTotalCategorieDonee(String categorieATester) {
+<span class="fc" id="L571">        int somme = 0;</span>
+<span class="fc" id="L572">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+        String categorie;
+<span class="fc bfc" id="L574" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="fc" id="L575">            categorie = activites.getJSONObject(i).getString(&quot;categorie&quot;);</span>
+<span class="fc bfc" id="L576" title="All 2 branches covered.">            if (categorie.equals(categorieATester)) {</span>
+<span class="fc" id="L577">                somme += activites.getJSONObject(i).getInt(&quot;heures&quot;);</span>
+            }
+        }
+<span class="fc" id="L580">        return somme;</span>
+    }
+
+    /**
+     * methode qui valide le nombre d'heure
+     *
+     * @param categorie (cours, groupe de discussion, projet de recherche)
+     * @param nbrHeuresMin (22, 1, 3)
+     * @return true si on depasse le nombre min et false sinon
+     */
+    public boolean validerNbrHeuresCategorie(String categorie,
+                                             int nbrHeuresMin,
+                                             ArrayList&lt;String&gt; listeActiviteValideSelonCycle) {
+<span class="fc bfc" id="L593" title="All 2 branches covered.">        return calculerNbrHeuresCategorie(categorie, listeActiviteValideSelonCycle) &lt; nbrHeuresMin;</span>
+    }
+
+
+    /**
+     * Cette methode verifie les nombres d'heures dans chaque clee s'elle contient un nombre heure negatif
+     * Ainsi au debut erlle verifie d'abords le nombre dans heures_transferees_du_cycle_precedent
+     *
+     * @return false si le nombre d'heure est negatif, True sinon
+     */
+    public boolean validerNombreHeuresActivitesPositifs() {
+        boolean result;
+<span class="fc" id="L605">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="pc bpc" id="L606" title="1 of 2 branches missed.">        if (jsonObj.getString(&quot;ordre&quot;).equals(&quot;géologues&quot;)</span>
+<span class="fc bfc" id="L607" title="All 2 branches covered.">                || jsonObj.getString(&quot;ordre&quot;).equals(&quot;psychologues&quot;)) {</span>
+<span class="fc" id="L608">            result = validerHeureSiPositive(activites);</span>
+
+        } else {
+<span class="fc" id="L611">            result = validerHeureSiPositive(activites);</span>
+        }
+<span class="fc" id="L613">        return result;</span>
+    }
+
+    /**
+     * methode qui verifie si l'heure d'une activite est positive ou non
+     *
+     * @param activites l'activite a verifier
+     * @return true si l'heure est positive false sinon
+     */
+    private boolean validerHeureSiPositive(JSONArray activites) {
+<span class="fc" id="L623">        boolean result = true;</span>
+<span class="fc bfc" id="L624" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="fc bfc" id="L625" title="All 2 branches covered.">            if (activites.getJSONObject(i).getInt(&quot;heures&quot;) &lt; 0) {</span>
+<span class="fc" id="L626">                result = false;</span>
+            }
+        }
+<span class="fc" id="L629">        return result;</span>
+    }
+
+    /**
+     * Cette methode permet de valider le champs numéro de permis si il
+     * est valide ou pas selon l'ordre déclaré dans le fichier d'entrée.
+     *
+     * @return True si le numéro de permis est valide, false sinon.
+     */
+    public boolean validerNumeroPermisTousOrdres() {
+<span class="fc" id="L639">        boolean resultat = false;</span>
+<span class="pc bpc" id="L640" title="1 of 5 branches missed.">        switch (jsonObj.getString(&quot;ordre&quot;)) {</span>
+            case &quot;architectes&quot;:
+<span class="fc" id="L642">                resultat = validerNumeroPermisArchitectes();</span>
+<span class="fc" id="L643">                break;</span>
+            case &quot;psychologues&quot;:
+<span class="fc" id="L645">                resultat = validerNumeroPermisPsychologue();</span>
+<span class="fc" id="L646">                break;</span>
+            case &quot;géologues&quot;:
+<span class="nc" id="L648">                resultat = validerNumeroPermisGeologue();</span>
+<span class="nc" id="L649">                break;</span>
+            case &quot;podiatres&quot;:
+<span class="fc" id="L651">                resultat = validerNumeroPermisPodiatre();</span>
+        }
+<span class="fc" id="L653">        return resultat;</span>
+    }
+
+    /**
+     * Cette methode permet de valider le numero de permis de l'ordre podiatre.
+     *
+     * @return true si le numero de permis est valide, false sinon.
+     */
+    public boolean validerNumeroPermisPodiatre() {
+<span class="fc" id="L662">        String numPermis = jsonObj.getString(&quot;numero_de_permis&quot;);</span>
+<span class="fc" id="L663">        return numPermis.matches(&quot;\\d{5}&quot;);</span>
+    }
+
+    /**
+     *  cette methode permet de generer un message d'heure si le
+     *  numero de permis est invalide.
+     *
+     * @return un message d'erreur si le numero de permis est invalide.
+     */
+    public String genererMsgErreurNumeroPermis() {
+<span class="fc" id="L673">        String messageErreur = &quot;&quot;;</span>
+<span class="pc bpc" id="L674" title="1 of 2 branches missed.">        if (!validerNumeroPermisTousOrdres()) {</span>
+<span class="nc" id="L675">            messageErreur = MSG_ERR_NUMERO_PERMIS_INVALIDE;</span>
+        }
+<span class="fc" id="L677">        return messageErreur;</span>
+    }
+
+    /**
+     * Cette methode permet de valider le numero de permis de l'ordre geologues.
+     *
+     * @return true si le numero de permis est valide, false sinon.
+     */
+    public boolean validerNumeroPermisGeologue() {
+<span class="fc" id="L686">        String numPermis = jsonObj.getString(&quot;numero_de_permis&quot;);</span>
+<span class="fc" id="L687">        boolean resultat = false;</span>
+<span class="fc" id="L688">        String nom = jsonObj.getString(&quot;nom&quot;);</span>
+<span class="fc" id="L689">        String prenom = jsonObj.getString(&quot;prenom&quot;);</span>
+<span class="pc bpc" id="L690" title="2 of 4 branches missed.">        if (!validerNomPrenom(nom) &amp;&amp; !validerNomPrenom(prenom)) {</span>
+<span class="fc" id="L691">            char premierCarNom = nom.toUpperCase().charAt(0);</span>
+<span class="fc" id="L692">            char deuxiemeCarPrenom = prenom.toUpperCase().charAt(0);</span>
+<span class="pc bpc" id="L693" title="1 of 4 branches missed.">            if (numPermis.charAt(0) == premierCarNom &amp;&amp; numPermis.charAt(1) == deuxiemeCarPrenom) {</span>
+<span class="fc" id="L694">                resultat = numPermis.substring(2).matches(&quot;\\d{4}&quot;);</span>
+            }
+        }
+<span class="fc" id="L697">        return resultat;</span>
+
+    }
+
+    /**
+     * verifie si le nombre de permis commence par [A,R,S,Z]
+     * et suivi de 4 chiffres pour l'ordre Architecte.
+     *
+     * @return True si le numero de permis est valide, False sinon
+     */
+    public boolean validerNumeroPermisArchitectes() {
+<span class="fc" id="L708">        String numPermis = jsonObj.getString(&quot;numero_de_permis&quot;);</span>
+<span class="fc" id="L709">        return numPermis.matches(&quot;[AT]\\d{4}&quot;);</span>
+    }
+
+
+    /**
+     * Cette methode verifie si le nombre de caracteres d'activites est valide.
+     * Une description est valide si elle est composée d'au moins 20 caractères.
+     *
+     * @return True si la description de l'activité est valide, False sinon.
+     */
+    public boolean validerNbrCaracteresActivites() {
+<span class="fc" id="L720">        boolean resultat = true;</span>
+<span class="fc" id="L721">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc bfc" id="L722" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="fc bfc" id="L723" title="All 2 branches covered.">            if (activites.getJSONObject(i).getString(&quot;description&quot;).length() &lt; 20) {</span>
+<span class="fc" id="L724">                resultat = false;</span>
+            }
+        }
+<span class="fc" id="L727">        return resultat;</span>
+    }
+
+    /**
+     * Cette methode permet de generer un message d'erreur si une
+     * des description des activitees déclarées dans le fichier
+     * JSON d'entrée est invalide.
+     *
+     * @return une chaine de caractere contenant un message d'erreur.
+     */
+    public String genererMsgErrDescription() {
+<span class="fc" id="L738">        String resultat = &quot;&quot;;</span>
+<span class="pc bpc" id="L739" title="1 of 2 branches missed.">        if (!validerNbrCaracteresActivites()) {</span>
+<span class="fc" id="L740">            resultat = &quot;La description est de moins de 20 caractères&quot;;</span>
+        }
+<span class="fc" id="L742">        return resultat;</span>
+    }
+
+
+    /**
+     * Cette methode valide le fichier Json s'il contient tout les champs
+     * (si tout les clees sont presentes)
+     * Ainsi les clee du JSON Array (voir les deux constantes
+     * LISTE_CHAMPS_JSONFILE et LISTE_CHAMPS_ACTIVITES)
+     *
+     * @return True si tout les champs existent, False sinon
+     */
+    public boolean validerChamps() {
+<span class="fc" id="L755">        boolean result = false;</span>
+<span class="fc" id="L756">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="pc bpc" id="L757" title="1 of 4 branches missed.">        if ((validerChampsCleeJson() || validerChampsCleeJsonArchitecte())</span>
+<span class="pc bpc" id="L758" title="1 of 2 branches missed.">                &amp;&amp; validerChampsCleeJsonArray(activites)) {</span>
+<span class="fc" id="L759">            result = true;</span>
+        }
+<span class="fc" id="L761">        return result;</span>
+    }
+
+    /**
+     * Cette methode valide les clees du fichier Json D'ENTRÉE.
+     * Si il y a un champs qui manque, la methode retourne un message d'erreur.
+     *
+     * @return true si tout les clees sont presents, false sinon
+     */
+    private boolean validerChampsCleeJsonArchitecte() {
+<span class="fc" id="L771">        boolean result = true;</span>
+<span class="fc bfc" id="L772" title="All 2 branches covered.">        for (String s : LISTE_CHAMPS_JSONFILE_ARCHITECTE) {</span>
+<span class="fc bfc" id="L773" title="All 2 branches covered.">            if (!jsonObj.has(s))</span>
+<span class="fc" id="L774">                result = false;</span>
+<span class="fc" id="L775">        }</span>
+<span class="fc" id="L776">        return result;</span>
+    }
+
+    /**
+     * Cette methode valide les clees du fichier Json D'ENTRÉE.
+     * Si il y a un champs qui manque, la methode retourne un message d'erreur.
+     *
+     * @return true si tout les clees sont presents, false sinon
+     */
+    private boolean validerChampsCleeJson() {
+<span class="fc" id="L786">        boolean result = true;</span>
+<span class="fc bfc" id="L787" title="All 2 branches covered.">        for (String s : LISTE_CHAMPS_JSONFILE) {</span>
+<span class="fc bfc" id="L788" title="All 2 branches covered.">            if (!jsonObj.has(s))</span>
+<span class="fc" id="L789">                result = false;</span>
+<span class="fc" id="L790">        }</span>
+<span class="fc" id="L791">        return result;</span>
+    }
+
+    /**
+     * cette methode valide les clees du JsonArray de mon fichier Json
+     *
+     * @param activites le tableau ou y a les clees a vierifier
+     * @return true si tout les clees sont presents, false sinon
+     */
+    private boolean validerChampsCleeJsonArray(JSONArray activites) {
+<span class="fc" id="L801">        boolean result = true;</span>
+<span class="fc bfc" id="L802" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="fc bfc" id="L803" title="All 2 branches covered.">            for (String s : LISTE_CHAMPS_ACTIVITES) {</span>
+<span class="pc bpc" id="L804" title="1 of 2 branches missed.">                if (!activites.getJSONObject(i).has(s))</span>
+<span class="nc" id="L805">                    result = false;</span>
+<span class="fc" id="L806">            }</span>
+        }
+<span class="fc" id="L808">        return result;</span>
+    }
+
+    /**
+     * Methode qui retourne le seuil minimal d'une formation selon cycle
+     *
+     * @return le seuil selon le cycle
+     */
+    public int retournerSeuilMinSelonCycle() {
+<span class="fc" id="L817">        int resultat = 0;</span>
+<span class="fc" id="L818">        String cycle = jsonObj.getString(&quot;cycle&quot;);</span>
+<span class="fc bfc" id="L819" title="All 2 branches covered.">        if (cycle.equals(&quot;2020-2022&quot;)) {</span>
+<span class="fc" id="L820">            resultat = 40;</span>
+<span class="pc bpc" id="L821" title="1 of 4 branches missed.">        } else if (cycle.equals(&quot;2018-2020&quot;) || cycle.equals(&quot;2016-2018&quot;)) {</span>
+<span class="fc" id="L822">            resultat = 42;</span>
+        }
+<span class="fc" id="L824">        return resultat;</span>
+    }
+
+    /**
+     * Cette methode permet de verifier la validité des 4 exigences du
+     * client pour le fichier d'entree
+     * @return True si les exigence sont valides, false sinon.
+     */
+    public boolean validerExigence(){
+<span class="pc bpc" id="L833" title="1 of 2 branches missed.">        return validerNombreHeuresActivitesPositifs()</span>
+<span class="pc bpc" id="L834" title="1 of 2 branches missed.">                &amp;&amp; validerNbrCaracteresActivites()</span>
+<span class="pc bpc" id="L835" title="1 of 2 branches missed.">                &amp;&amp; validerNumeroPermisTousOrdres()</span>
+<span class="pc bpc" id="L836" title="1 of 2 branches missed.">                &amp;&amp; validerChamps();</span>
+    }
+
+
+    /**
+     * Methdoe qui stock les messages d'erreur qu'on va afficher dans le fichier de sortie
+     * dans une liste de chaine de caractère.
+     *
+     * @return une liste des messages d'erreur
+     */
+    public ArrayList&lt;String&gt; stockerMessagesErreursResult() {
+<span class="fc" id="L847">        ArrayList&lt;String&gt; resultat = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L848">        String ordre = jsonObj.getString(&quot;ordre&quot;);</span>
+<span class="fc" id="L849">        Architecte architecte = new Architecte(inputFile, jsonObj);</span>
+<span class="fc" id="L850">        Geologue geologue = new Geologue(inputFile, jsonObj);</span>
+<span class="fc" id="L851">        Psychologue psychologue = new Psychologue(inputFile, jsonObj);</span>
+<span class="pc bpc" id="L852" title="1 of 2 branches missed.">        if (validerExigence()) {</span>
+<span class="pc bpc" id="L853" title="4 of 5 branches missed.">            switch (ordre) {</span>
+<span class="fc" id="L854">                case &quot;architectes&quot; -&gt; resultat.addAll(stockListeMessagesErreurDansListe(architecte.stockerMessagesErreursResult()));</span>
+<span class="nc" id="L855">                case &quot;géologues&quot; -&gt; resultat.addAll(stockListeMessagesErreurDansListe(geologue.stockerMessagesErreursResult()));</span>
+<span class="nc" id="L856">                case &quot;podiatres&quot; -&gt; resultat.addAll(stockListeMessagesErreurDansListe(geologue.stockerMessagesErreursResult()));</span>
+<span class="pc" id="L857">                case &quot;psychologues&quot; -&gt; resultat.addAll(stockListeMessagesErreurDansListe(psychologue.stockerMessagesErreursResult()));</span>
+            }
+        } else {
+<span class="nc" id="L860">            resultat.addAll(stockListeMessagesErreurDansListe(afficherMessageErreurALaConsoleSelonErreur()));</span>
+        }
+<span class="fc" id="L862">        return resultat;</span>
+    }
+
+    /**
+     * Cette methode permet de valider le numero de permis de l'ordre psychologues.
+     *
+     * @return true si le numero de permis est valide, false sinon.
+     */
+    public boolean validerNumeroPermisPsychologue() {
+<span class="fc" id="L871">        String numPermis = jsonObj.getString(&quot;numero_de_permis&quot;);</span>
+<span class="fc" id="L872">        return numPermis.matches(&quot;\\d{5}[-]\\d{2}&quot;);</span>
+    }
+
+    /**
+     * Cette methode retourne un message d'erreur si l'un (ou les deux)
+     * champs nom et prenom sont invalide ou numero de permis invalide.
+     *
+     * @return un message indiquant l'invalidité des champs.
+     */
+    public String EcrireMsgErrChampsInvalide() {
+<span class="fc" id="L882">        String message = &quot;&quot;;</span>
+<span class="pc bpc" id="L883" title="1 of 2 branches missed.">        if (!validerNumeroPermisTousOrdres()) {</span>
+<span class="fc" id="L884">            message += MSG_ERR_NUMERO_PERMIS_INVALIDE;</span>
+        }
+<span class="pc bpc" id="L886" title="1 of 2 branches missed.">        if (validerNomPrenom(jsonObj.getString(&quot;nom&quot;))) {</span>
+<span class="nc" id="L887">            message += genererMessage(&quot;nom&quot;, jsonObj.getString(&quot;nom&quot;)) + &quot;\n&quot;;</span>
+        }
+<span class="pc bpc" id="L889" title="1 of 2 branches missed.">        if (validerNomPrenom(jsonObj.getString(&quot;prenom&quot;))) {</span>
+<span class="nc" id="L890">            message += genererMessage(&quot;prenom&quot;, jsonObj.getString(&quot;prenom&quot;)) + &quot;\n&quot;;</span>
+        }
+
+<span class="fc" id="L893">        return message;</span>
+    }
+
+    /**
+     * Cette methode retourne un message d'erreur si l'un (ou tous) les
+     * champs numero de permis ou un nombre d'heure négatif déclarees
+     * ou un champs manque.
+     *
+     * @return un message indiquant l'invalidité.
+     */
+    public String EcrireMsgSelonErr() {
+<span class="fc" id="L904">        String message = &quot;&quot;;</span>
+
+<span class="fc bfc" id="L906" title="All 2 branches covered.">        if (!validerChampsSexe()) {</span>
+<span class="fc" id="L907">            message += MSG_ERR_SEXE_INVALIDE;</span>
+        }
+<span class="fc bfc" id="L909" title="All 2 branches covered.">        if (!validerNombreHeuresActivitesPositifs()) {</span>
+<span class="fc" id="L910">            message += MSG_ERR_NOMBRE_HEURE_NEGATIF;</span>
+        }
+<span class="pc bpc" id="L912" title="1 of 2 branches missed.">        if (!validerNbrCaracteresActivites()) {</span>
+<span class="fc" id="L913">            message += genererMsgErrDescription() + &quot;\n&quot;;</span>
+        }
+<span class="pc bpc" id="L915" title="1 of 2 branches missed.">        if (!validerChamps()) {</span>
+<span class="nc" id="L916">            message += MSG_ERR_CHAMPS_MANQUANT;</span>
+        }
+<span class="fc" id="L918">        return message;</span>
+    }
+
+    /**
+     * Cette methode permet de generer un message d'erreur indiquant
+     * les invalidités pour qu'ils soient afficher a la console.
+     *
+     * @return un message d'erreur en cas d'invalidité.
+     */
+    public String afficherMessageErreurALaConsole() {
+<span class="fc" id="L928">        String resultat = &quot;&quot;;</span>
+<span class="pc bpc" id="L929" title="1 of 2 branches missed.">        if (validerChamps()) {</span>
+<span class="fc" id="L930">            resultat += EcrireMsgSelonErr();</span>
+<span class="fc" id="L931">            resultat += EcrireMsgErrChampsInvalide();</span>
+<span class="pc bpc" id="L932" title="1 of 2 branches missed.">            if (!verifierExistanceDesChamps()) {</span>
+<span class="nc" id="L933">                resultat += MSG_ERR_FICHIER_INVALIDE;</span>
+            }
+        } else {
+<span class="nc" id="L936">            resultat += MSG_ERR_CHAMPS_MANQUANT;</span>
+<span class="nc" id="L937">            resultat += MSG_ERR_FICHIER_INVALIDE;</span>
+        }
+<span class="fc" id="L939">        return resultat;</span>
+    }
+
+    /**
+     * methode pour stocker les messages d'erreur qui etaient stockes dans une liste
+     *
+     * @param methodesValidation liste des messages d'erreur
+     * @return une liste des message d'erreur
+     */
+    public ArrayList&lt;String&gt; stockListeMessagesErreurDansListe
+    (ArrayList&lt;String&gt; methodesValidation) {
+<span class="fc" id="L950">        ArrayList&lt;String&gt; resultat = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L951" title="All 2 branches covered.">        if (!methodesValidation.isEmpty()) {</span>
+<span class="fc" id="L952">            resultat.addAll(methodesValidation);</span>
+        }
+<span class="fc" id="L954">        return resultat;</span>
+    }
+
+    /**
+     * methode pour stocker les messages d'erreur qui etaient stockes
+     * dans une chaine de caractere
+     *
+     * @param methodesValidation un message d'erreurs
+     * @return une liste des messages d'erreurs
+     */
+    public ArrayList&lt;String&gt; stockChaineMessagesErreursDansListe
+    (String methodesValidation) {
+<span class="fc" id="L966">        ArrayList&lt;String&gt; resultat = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L967" title="All 2 branches covered.">        if (!methodesValidation.isEmpty()) {</span>
+<span class="fc" id="L968">            resultat.add(methodesValidation);</span>
+        }
+<span class="fc" id="L970">        return resultat;</span>
+    }
+
+    /**
+     * Cette methode permet d'ecrire le fichier JSON de sortie après
+     *
+     * @param fichierSortie le fichier de sortie
+     * @throws org.codehaus.jettison.json.JSONException si le JSON est invalid
+     * @throws IOException                              erreur d'entre ou sortie
+     */
+    public void ecrireFichierJSon(String fichierSortie) throws
+            org.codehaus.jettison.json.JSONException, IOException {
+
+<span class="nc" id="L983">        org.codehaus.jettison.json.JSONObject completOrNot =</span>
+                new org.codehaus.jettison.json.JSONObject();
+<span class="nc bnc" id="L985" title="All 2 branches missed.">        completOrNot.put(&quot;complet&quot;, stockerMessagesErreursResult().size() &lt;= 0);</span>
+<span class="nc" id="L986">        org.codehaus.jettison.json.JSONArray messagesErreur =</span>
+                new org.codehaus.jettison.json.JSONArray();
+<span class="nc" id="L988">        messagesErreur.put(stockerMessagesErreursResult());</span>
+<span class="nc" id="L989">        completOrNot.put(&quot;erreurs&quot;, stockerMessagesErreursResult());</span>
+<span class="nc" id="L990">        Files.write(Paths.get(fichierSortie), completOrNot.toString().getBytes());</span>
+<span class="nc" id="L991">    }</span>
+
+    /**
+     * Cette methode permet de récupérer les dates uniques déclarées dans
+     * le fichier Json d'entrée. elle retourne une liste des dates uniques.
+     *
+     * @return listeDateUnique contient les dates uniques du fichier d'entrée.
+     */
+    public ArrayList&lt;String&gt; recupererDateUnique() {
+<span class="fc" id="L1000">        ArrayList&lt;String&gt; listeDateUnique = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L1001">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc bfc" id="L1002" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="fc" id="L1003">            listeDateUnique.add(activites.getJSONObject(i).getString(&quot;date&quot;));</span>
+        }
+<span class="fc" id="L1005">        LinkedHashSet&lt;String&gt; hashSet = new LinkedHashSet&lt;String&gt;(listeDateUnique);</span>
+<span class="fc" id="L1006">        listeDateUnique = new ArrayList&lt;&gt;(hashSet);</span>
+<span class="fc" id="L1007">        return listeDateUnique;</span>
+    }
+
+    /**
+     * Cette methode permet de retourner la liste des heures des activitées
+     * qui ont lieu dans la même journée
+     *
+     * @return listeSortie la liste des liste des heures pour chaque journée.
+     */
+    public ArrayList&lt;ArrayList&lt;Integer&gt;&gt; recupererListeHeureParJour() {
+<span class="fc" id="L1017">        ArrayList&lt;Integer&gt; listeHeureParJour = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L1018">        ArrayList&lt;ArrayList&lt;Integer&gt;&gt; listeSortie = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L1019">        ArrayList&lt;String&gt; listeDateUnique = recupererDateUnique();</span>
+<span class="fc" id="L1020">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+
+<span class="fc bfc" id="L1022" title="All 2 branches covered.">        for (int i = 0; i &lt; listeDateUnique.size(); i++) {</span>
+<span class="fc bfc" id="L1023" title="All 2 branches covered.">            for (int j = 0; j &lt; activites.size(); j++) {</span>
+<span class="fc bfc" id="L1024" title="All 2 branches covered.">                if (listeDateUnique.get(i).equals(activites.getJSONObject(j).getString(&quot;date&quot;))) {</span>
+<span class="fc" id="L1025">                    listeHeureParJour.add(activites.getJSONObject(j).getInt(&quot;heures&quot;));</span>
+                }
+            }
+<span class="fc" id="L1028">            listeSortie.add(i, listeHeureParJour);</span>
+<span class="fc" id="L1029">            listeHeureParJour = new ArrayList&lt;&gt;();</span>
+        }
+<span class="fc" id="L1031">        return listeSortie;</span>
+    }
+
+
+    /**
+     * Cette methode permet de calculer le nombre des heures accumulés
+     * dans une même journée.
+     *
+     * @return la somme des heures effectuées dans une même journée.
+     */
+    public ArrayList&lt;Integer&gt; calculerNombreHeureParJour() {
+<span class="fc" id="L1042">        ArrayList&lt;Integer&gt; listeTotalHeuresParJour = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L1043">        ArrayList&lt;ArrayList&lt;Integer&gt;&gt; liste = recupererListeHeureParJour();</span>
+<span class="fc" id="L1044">        int somme = 0;</span>
+
+<span class="fc bfc" id="L1046" title="All 2 branches covered.">        for (int i = 0; i &lt; liste.size(); i++) {</span>
+<span class="fc bfc" id="L1047" title="All 2 branches covered.">            for (int j = 0; j &lt; liste.get(i).size(); j++) {</span>
+<span class="fc" id="L1048">                somme += liste.get(i).get(j);</span>
+            }
+<span class="fc" id="L1050">            listeTotalHeuresParJour.add(i, somme);</span>
+<span class="fc" id="L1051">            somme = 0;</span>
+        }
+
+<span class="fc" id="L1054">        return listeTotalHeuresParJour;</span>
+    }
+
+    /**
+     * Cette methode permet de savoir si le nombre d'heure accumulées en
+     * une seule journée est supérieur à 10 ou non.
+     *
+     * @return true si la somme des nombres d'heure par jour sont supérieur
+     * à 10, false sinon.
+     */
+    public boolean validerNbrHeureParJour(int nbrHeure) {
+<span class="fc bfc" id="L1065" title="All 2 branches covered.">        return nbrHeure &gt; 10;</span>
+
+    }
+
+    /**
+     * Cette methode permet de generer des messages d'erreur pour les dates
+     * où les nombres d'heures déclarées en une même journée dépasse les 10h.
+     *
+     * @return la liste des messages d'heure selon les dates.
+     */
+    public ArrayList&lt;String&gt; genererMsgErrSommeHeureParJour() {
+<span class="fc" id="L1076">        ArrayList&lt;String&gt; messageErreur = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L1077">        ArrayList&lt;String&gt; dateUnique = recupererDateUnique();</span>
+<span class="fc" id="L1078">        ArrayList&lt;Integer&gt; totalHeureParJour = calculerNombreHeureParJour();</span>
+<span class="fc bfc" id="L1079" title="All 2 branches covered.">        for (int i = 0; i &lt; dateUnique.size(); i++) {</span>
+<span class="fc bfc" id="L1080" title="All 2 branches covered.">            if (validerNbrHeureParJour(totalHeureParJour.get(i))) {</span>
+<span class="fc" id="L1081">                messageErreur.add(&quot;Uniquement 10 heures seront considérés pour la date du &quot;</span>
+<span class="fc" id="L1082">                        + dateUnique.get(i));</span>
+            }
+        }
+<span class="fc" id="L1085">        return messageErreur;</span>
+    }
+
+    /**
+     * Cette methode permet de valider le champs prenom et prenom  du fichier
+     * d'entrée.
+     * Le champs prenom et nom doivent etre des chaines de caracteres non vides.
+     *
+     * @return true si le prenom est valide, false sinon.
+     */
+    public boolean validerNomPrenom(String chaine) {
+<span class="fc" id="L1096">        return chaine.isEmpty();</span>
+    }
+
+
+    /**
+     * Cette methode permet de generer un message d'erreur incluant la chaine
+     * de caractères passées en paramètres.
+     *
+     * @param chaine la chaine à ajouter dans le message.
+     * @return messageErr contient le message d'erreur à generer.
+     */
+    public String genererMessage(String nomChamps, String chaine) {
+<span class="nc" id="L1108">        return &quot;Le champs &quot; + nomChamps + &quot; contient une chaine de caracteres vide.&quot;;</span>
+    }
+
+    /**
+     * Cette methode permet de valider le champs sexe du fichier Json d'entrée.
+     * Si le champs sexe n'est pas valide, elle retourne false sinon si il
+     * est 0, 1 ou 2 elle retourne true.
+     *
+     * @return true si le champs est valide, false sinon.
+     */
+    public boolean validerChampsSexe() {
+<span class="fc" id="L1119">        return listeDesSexeValide.contains(jsonObj.getInt(&quot;sexe&quot;));</span>
+    }
+
+    /**
+     * Cette methode permet de valider le nombre d'heure des categorie donnees.
+     *
+     * @return une liste des chaines de caracteres contenant des
+     * messages d'invalidité.
+     */
+    public ArrayList&lt;String&gt; validerNombreHeureCategorieDonnee() {
+<span class="fc" id="L1129">        ArrayList&lt;String&gt; sortie = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L1130">        ArrayList&lt;String&gt; categorieDansFichier = recupererCategorieDansFichier();</span>
+<span class="fc" id="L1131">        ArrayList&lt;String&gt; listeTroisCategorie = new ArrayList&lt;&gt;(Arrays.asList(</span>
+                &quot;cours&quot;, &quot;projet de recherche&quot;, &quot;groupe de discussion&quot;));
+<span class="fc" id="L1133">        ArrayList&lt;Integer&gt; listeTotalHeures = calculerTotalSommeTroisCategorie();</span>
+<span class="pc bpc" id="L1134" title="2 of 4 branches missed.">        if (categorieDansFichier.contains(listeTroisCategorie.get(0)) &amp;&amp; listeTotalHeures.get(0) &lt; 22) {</span>
+<span class="fc" id="L1135">            sortie.add(MSG_ERR_COURS_VINGT_DEUX);</span>
+        }
+<span class="pc bpc" id="L1137" title="2 of 4 branches missed.">        if (categorieDansFichier.contains(listeTroisCategorie.get(1)) &amp;&amp; listeTotalHeures.get(1) &lt; 3) {</span>
+<span class="fc" id="L1138">            sortie.add(MSG_ERR_PROJET_RECHERCHE_TROIS);</span>
+        }
+<span class="pc bpc" id="L1140" title="2 of 4 branches missed.">        if (categorieDansFichier.contains(listeTroisCategorie.get(2)) &amp;&amp; listeTotalHeures.get(2) &lt; 1) {</span>
+<span class="fc" id="L1141">            sortie.add(MSG_ERR_GROUPE_DISCUSSION_UN);</span>
+        }
+<span class="fc" id="L1143">        return sortie;</span>
+    }
+
+    /**
+     * Cette methode permet de recuperer toutes les categories dans
+     * le fichier JSON d'entrée.
+     *
+     * @return la liste des categories existantes dans le fichier d'entrée.
+     */
+    public ArrayList&lt;String&gt; recupererCategorieDansFichier() {
+<span class="fc" id="L1153">        ArrayList&lt;String&gt; sortie = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L1154">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc bfc" id="L1155" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="fc" id="L1156">            sortie.add(activites.getJSONObject(i).getString(&quot;categorie&quot;));</span>
+        }
+
+<span class="fc" id="L1159">        return sortie;</span>
+    }
+
+    /**
+     * Cette methode permet de verifier si tous les champs de fichier
+     * d'entrée existes ou non.
+     * @return True si les champs existe, false sinon.
+     */
+    public Boolean verifierExistanceDesChamps() {
+<span class="pc bpc" id="L1168" title="1 of 2 branches missed.">        return validerNombreHeuresActivitesPositifs()</span>
+<span class="nc bnc" id="L1169" title="All 2 branches missed.">                || !validerNumeroPermisTousOrdres()</span>
+<span class="nc bnc" id="L1170" title="All 2 branches missed.">                || !validerNbrCaracteresActivites()</span>
+<span class="nc bnc" id="L1171" title="All 2 branches missed.">                || !validerChamps()</span>
+<span class="nc bnc" id="L1172" title="All 2 branches missed.">                || validerNomPrenom(jsonObj.getString(&quot;nom&quot;))</span>
+<span class="pc bnc" id="L1173" title="All 2 branches missed.">                || validerNomPrenom(jsonObj.getString(&quot;prenom&quot;));</span>
+    }
+
+    /**
+     * afficher un message d'erreur a la console si les 4 exigences ne sont pas respectés
+     *
+     * @return un message d'erreur si les 4 exigences ne sont pas respectés
+     */
+    public ArrayList&lt;String&gt; afficherMessageErreurALaConsoleSelonErreur() {
+<span class="fc" id="L1182">        ArrayList&lt;String&gt; resultat = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L1183" title="1 of 2 branches missed.">        if (validerChamps()) {</span>
+<span class="pc bpc" id="L1184" title="1 of 2 branches missed.">            if (!validerNumeroPermisTousOrdres()) {</span>
+<span class="fc" id="L1185">                resultat.add(&quot;Le numéro de permis est invalide&quot;);</span>
+            }
+<span class="pc bpc" id="L1187" title="1 of 2 branches missed.">            if (!validerNbrCaracteresActivites()) {</span>
+<span class="fc" id="L1188">                resultat.add(genererMsgErrDescription());</span>
+            }
+<span class="pc bpc" id="L1190" title="1 of 2 branches missed.">            if (!validerChamps()) {</span>
+<span class="nc" id="L1191">                resultat.add(&quot;Un champs manquant&quot;);</span>
+            }
+<span class="pc bpc" id="L1193" title="1 of 2 branches missed.">            if (validerNomPrenom(jsonObj.getString(&quot;nom&quot;))) {</span>
+<span class="nc" id="L1194">                resultat.add(genererMessage(&quot;nom&quot;, jsonObj.getString(&quot;nom&quot;)));</span>
+            }
+<span class="pc bpc" id="L1196" title="1 of 2 branches missed.">            if (validerNomPrenom(jsonObj.getString(&quot;prenom&quot;))) {</span>
+<span class="nc" id="L1197">                resultat.add(genererMessage(&quot;prenom&quot;, jsonObj.getString(&quot;prenom&quot;)));</span>
+            }
+<span class="pc bpc" id="L1199" title="1 of 2 branches missed.">            if (!validerNombreHeuresActivitesPositifs()) {</span>
+<span class="nc" id="L1200">                resultat.add(MSG_ERR_NOMBRE_HEURE_NEGATIF);</span>
+            }
+<span class="pc bpc" id="L1202" title="1 of 2 branches missed.">            if (!validerChampsSexe()) {</span>
+<span class="nc" id="L1203">                resultat.add(&quot;Le champs sexe est invalide. Uniquement les valeurs 0, 1 ou 2 sont acceptées dans ce champ.&quot;);</span>
+            }
+<span class="fc" id="L1205">            resultat.add(&quot;Le fichier d'entrée est invalide et le cycle est incomplet.&quot;);</span>
+        } else {
+<span class="nc" id="L1207">            resultat.add(&quot;Le fichier d'entrée est invalide et le cycle est incomplet.&quot;);</span>
+        }
+<span class="fc" id="L1209">        return resultat;</span>
+    }
+
+
+}
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

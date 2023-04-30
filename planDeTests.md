@@ -1,0 +1,80 @@
+# Plan de Tests
+
+---
+
+## Exigences Fonctionnalités à tester
+
+Identifiants des fonctionnalités | Description de fonctionnalités
+--- | ---
+EF - 001 |Valider les déclarations d'activités de formation continu.
+EF - 002 |Calculer le nombre d'heure d'activité de formation par cycle.
+EF - 003 |Valider les cycles et des dates pour chaque ordre.
+ EF - 004                         | Accumuler des statistiques pour chaque exécution.            
+
+
+
+## Suites et cas de tests
+
+1. **Suites et cas de tests**
+
+| Identifiants des fonctionnalités | Identifiants des suites de tests | Description des suites de tests                              | Nombre de cas de tests |
+| -------------------------------- | -------------------------------- | ------------------------------------------------------------ | ---------------------- |
+| EF - 001                         | ST - 001                         | Tester la validation des déclarations d'activités de formation continu. | 20                     |
+| EF - 002                         | ST - 002                         | Tester le calcul de nombre d'heure d'activité de formation par cycle. | 5                      |
+| EF - 003                         | ST - 003                         | Tester la validation du cycle et des dates pour chaque ordre | 16                     |
+| EF - 004                         | ST - 004                         | Accumuler des statistiques pour chaque exécution.            | 9                      |
+
+## Cas de tests
+
+ Identifiants des suites de tests | Identifiants des cas de tests | Description des cas de tests | Préconditions | Sortie attendue | Priorité 
+--- | --- | :-: | --- | --- | ---
+ ST - 001 | CT - 001 | valider le numéro de permis invalide  pour l'ordre Podiatres | Le fichier d’entrée JSON comporte un  numéro de permis  invalide pour l'ordre **Podiatres**, qui contient 3 chiffres. | False |Haute
+ ST - 001 | CT - 002 | valider le numéro de permis valide  pour l'ordre Podiatres | Le fichier d’entrée JSON comporte un numéro de permis valide pour l'ordre **Podiatres**, qui contient 5 chiffres. | True |Haute
+ ST - 001 | CT - 003 | valider le numéro de permis invalide  pour l'ordre Architecte | Le fichier d’entrée JSON comporte un numéro de permis pour l'ordre **Architecte** invalide, qui contient 4 chiffres. | False |Haute
+ ST - 001 | CT - 004 | valider le numéro de permis valide  pour l'ordre Architecte | Le fichier d’entrée JSON comporte un numéro de permis invalide pour l'ordre **Architecte**, qui contient 4 chiffres. | True |Haute
+ ST - 001 | CT - 005 | valider le numéro de permis invalide  pour l'ordre Psychologue | Le fichier d’entrée JSON comporte un numéro de permis invalide pour l'ordre **Psychologues**, qui contient 5 chiffres. | False |Haute
+ ST - 001 | CT - 006 | valider le numéro de permis valide  pour l'ordre Psychologue | Le fichier d’entrée JSON comporte un numéro de permis invalide pour l'ordre **psychologues**, qui contient 5 chiffres suivies d'un tiret suivie de 2 chiffres. | True |Haute
+ ST - 001 | CT - 007 | valider le numéro de permis invalide  pour l'ordre Géologue | Le fichier d’entrée JSON comporte un numéro de permis invalide pour l'ordre **géologues**, qui contient 4 chiffres. | False |Haute
+ ST - 001 | CT - 008 | valider le numéro de permis valide  pour l'ordre Géologue. | Le fichier d’entrée JSON comporte un numéro de permis invalide pour l'ordre **géologues**, qui est composé  La première lettre du numéro de permis correspond à la première lettre du nom du membre en majuscule. La deuxième lettre du numéro de permis correspond à la première lettre du prénom du membre en majuscule, suivis de 4 chiffres. | True |Haute
+ ST - 001 | CT - 009 | valider le nombre  d'heure par jour. | Le fichier d’entrée JSON comporte des nombres d'heures valides pour chaque dates. Dans un premier fichier le nombre d'heure accumulées en une seule journée est supérieur à 10. Dans un autre fichier le nombre d'heure accumulées en une seule journée est inférieur à 10. | 1er fichier True 2eme fichier False |Moyenne
+ ST - 001 | CT - 010 | valider le nombre de caractères de la description des activités. | Le fichier d’entrée JSON comporte une acitivité dont le nombre de caractères de sa description est inférieur à 20 caractères. | True (la description est valide) |Haute
+ ST - 001 | CT - 011 | valider les champs nom et prénom qui sont des chaines de caractères non vides. | Une chaine de caractères vide. | Elle retourne True si la chaîne de caractère est vide. |Haute
+ ST - 001 | CT - 012 | récupérer le seuil minimal d'heures de formation continue pour l'ordre architectes. | Des fichiers d'entrée JSON comporte les déclarations pour l'ordre architectes chacun avec un cycle différent. | Si le cycle est 2020-2022 elle doit retourner 40. Pour les deux autres fichiers qui comportent les deux cycles 2018-2020 et 2016-2018. |Haute
+ ST - 001 | CT - 013 | Récupérer les dates uniques déclarées dans le fichier JSON d'entrée. | Le fichier d'entrée Json comporte des dates qui se répètent. | Récupère toutes les dates dans une liste; si une date se répète plus qu'une seule fois dans le fichier elle doit être inscrite une seule fois dans la liste. |Haute
+ ST - 001 | CT - 014 | Récupérer les categorie déclarées dans le fichier JSON d'entrée. | Le fichier d'entrée JSON comporte categorie déclarées. | Récupère toutes les catégorie dans une liste contenant des chaines de caractères. |Haute
+ ST - 001 | CT - 015 | valider le jour, le mois, l'année d'une activité précise. | Un fichier d'entrée JSON comporte une activité dont la date(le jour,le mois, l'année) sont invalides. | False (Le jour, le  mois et l'année sont invalides ) |Haute
+ ST - 001 | CT - 016 | valider le jour, le mois, l'année d'une activité précise. | Un fichier d'entrée JSON comporte une activité dont la date(le jour,le mois, l'année) sont valides. | True (Le jour, le  mois et l'année sont valides ) |Haute
+ ST - 001 | CT - 017 | Valider les entrées (les déclarations ) d'un fichier JSON. | Un fichier d'entrée JSON comporte des entrée invalide . | Message d'erreur : "le fichier d'entrée est invalide et le cycle est incomplet." |Haute
+ ST - 001 | CT - 018 | Tester le  nombre d'heure d'une activité dans une même journée ne doit pas être supérieur à 10. | Un fichier d'entrée JSON comporte des différents activités contenant des nombres d'heures qui dépassent les 10 heures par jour pour les dates 2020-01-01 et 2020-08-01. | Message d'erreur :  "Uniquement 10 heures seront considérés pour la date du 2020-01-01. Uniquement 10 heures seront considérés pour la date du 2020-08-01." |Haute
+ ST - 001 | CT - 019 | Tester le contenu d'un fichier Json de sortie, (le contenus est composé de champs ordre , cycle , numéro de permis .. ). | Un fichier d'entrée JSON dont le cycle est incomplet et il lui manque 5 heures pour atteindre les 17h min des 6 categories spécifiées. | Message d'erreur : "Il manque 30 heures de formation pour compléter le cycle. il manque 5 h pour atteindre le min de 17h pour la liste des 6 catégories" |Haute
+ ST - 001 | CT - 020 | Tester la validation du nombre d'heure transfere du cycle précédent | Un fichier d'entrée JSON dont le champs nombre d'heure transféré du cycle est égale à 7 heures. | Message d'erreur:"heures_transferees_du_cycle_precedent est supérieur à 7" |Haute
+ ST - 002 | CT - 021 | Tester la méthode qui calcule le total d'heures de chaque catégorie déclarée dans le fichier JSON. | Un fichier d'entrée JSON dont les champs catégorie sont valides et prêts à être calculées . | La méthode doit retourner la somme correcte des nombres d'heures de toutes les catégories. |Haute
+ ST - 002 | CT - 022 | Calculer total somme trois categorie spécifiques | Un fichier d'entrée JSON qui contient les 3 catégorie dont on veut calculer la somme. | La méthode doit retourner la liste des sommes des heures effectués pour ces 3 catégories. |Haute
+ ST - 002 | CT - 023 | Calculer le total des heures d'une Catégorie donnée | Un fichier d'entrée JSON valide. | La méthode doit retourner la somme des heures de la catégorie donnée. |Haute
+ ST - 002 | CT - 024 | Calculer le nombre d'heure par jour. | Un fichier d'entrée JSON valide. | La méthode doit retourner la liste qui contient le nombre d'heures par jour. |Haute
+ ST - 002 | CT - 025 | Tester la methode qui calcul le total d'heures de chaque catégorie. |Un fichier d'entrée JSON valide.|La méthode doit retourner le total d'heures de chaque catégorie.|Haute
+ ST - 003 | CT - 026 | Valider la date des cycles pour l'ordre **psychologues** |Un fichier d'entrée JSON dont la date de cycles pour l'ordre **psychologues** est valide.|Un message contenant une chaine de caractère vide.|Haute
+ ST - 003 | CT - 027 | Valider la date des cycles pour l'ordre **psychologues** |Un fichier d'entrée JSON dont la date de cycles pour l'ordre **psychologues** est invalide.|Message d'erreur : "Cycle d'activite invalide."|Haute
+ ST - 003 | CT - 028 | Tester le cycle pour savoir le seuil de nombre d'heure de la formation |Un fichier d'entrée JSON contenant un cycle bien précis.|La méthode doit retourner le seuil selon le cycle déclaré dans le fichier JSON d'entrée.|Haute
+ ST - 003 | CT - 029 | Vérifier si les données sont mis à jour correctement par la méthode qui permer d'ajouter le total de déclarations traitée. |Des listes pour effectuer une comparaison entre le résultat attendu de la méthode et le résultat obtenu.|La méthode doit retourner les résultats obtenus dans une liste.|Moyenne
+ ST - 003 | CT - 030 | Vérifier si les données sont mis à jour correctement par la méthode qui permer d'ajouter le total de déclarations traitée pour les déclarations complètes. |Des listes pour effectuer une comparaison entre le résultat attendu de la méthode et le résultat obtenu.|La méthode doit retourner les résultats obtenus dans une liste.|Haute
+ ST - 003                         | CT - 031 | Modifier la valeur du fichier statistique |Des listes pour effectuer une comparaison entre le résultat attendu de la méthode et le résultat obtenu.|La méthode doit retourner les résultats obtenus dans une liste.|Haute
+ ST - 003 | CT - 032 | Valider Format ISO Date |Un fichier d'entrée JSON dont les dates du cycle ne sont pas du format ISO Date.|Retourne False|Haute
+ ST - 003 | CT - 033 | Valider Format ISO Date |Un fichier d'entrée JSON dont les dates du cycle ne sont du format ISO Date.|Retourne True|Haute
+ ST - 003 | CT - 034 | Valider le heures de categories s'ils sont entre 1 et 10 |Un fichier d'entrée JSON dont le nombre d'heures de l'activité cours sur la déolontologie est invalide.|Message d'erreur : "Le nombre d'heures alloue a l'activite Cours sur la déontologie est invalide"|Moyenne
+ ST - 003 | CT - 035 | Tester t les dates invalides |Un fichier d'entrée JSON dont le nombre d'heures de l'activité cours sur la déolontologie est invalide.|La méthode doit retourner une liste des dates invalides dans le fichier JSON  d'entrée.|Haute
+ ST - 003 | CT - 036 | Tester la methode qui retourne un message d'erreur si le nombre d'heures de la catégorie cours         dans l'ordre psychologue est inférieur à 25 |Un fichier d'entrée JSON dont le nombre d'heures  le nombre d'heures de la catégorie cours         dans l'ordre psychologue est inférieur à 25.|Message d'erreur : " Erreur, le nombre d'heures de la catégorie cours dans l'ordre psychologue est inférieur à 25"|Haute
+ ST - 003 | CT - 037 | Tester le cycle pour savoir son minimum d'heure d'activitee par cycle. |Un fichier d'entrée JSON dont la somme de nombre d'heure d'activitee par cycle est égale au seuil de ce cycle.|La méthode doit retourner le seuil selon le cycle déclaré dans le fichier JSON d'entrée.|h
+ ST - 003 | CT - 038 | Valider la date des cycles pour l'ordre **architectes** |Un fichier d'entrée JSON dont la date de cycles pour l'ordre **architectes** est valide.|un message contenant une chaine de caractère vide.|Haute
+ ST - 003 | CT - 039 | Valider la date des cycles pour l'ordre **architectes** |Un fichier d'entrée JSON dont la date de cycles pour l'ordre **architectes** est invalide.|Message d'erreur : "Cycle d'activite invalide."|Haute
+ ST - 003 | CT - 040 | Valider la date des cycles pour l'ordre **geologues** |Un fichier d'entrée JSON dont la date de cycles pour l'ordre **geologues** est valide.|Un message contenant une chaine de caractère vide.|Haute
+ ST - 003 | CT - 041 | Valider la date des cycles pour l'ordre **geologues** |Un fichier d'entrée JSON dont la date de cycles pour l'ordre **geologues** est invalide.|Message d'erreur : "Cycle d'activite invalide."|Haute
+ ST - 004 | CT - 042 |La méthode qui ajoute le  Total declarations traitéela méthode qui ajoute le Total declarations pour declarations complétés.|Des listes pour savoir si les mis a jour sont  correcte par la méthode à tester.|Elle doit retourner une liste des données valident  (ce sont des entiers)|Faible
+ ST - 004 | CT - 043 |Vérifier si les données sont mis à jour correctement par la méthode qui ajoute le Total declarations Faites Sexe pour homme|Des listes pour  savoir si les mis a jour sont sont correctes pour les declarations faites pour le sexe homme|Elle doit retourner une liste des données valident pour les déclarations faites pour le sexe homme  (ce sont des entiers).|Faible
+ ST - 004 | CT - 044 |Vérifier si les données sont mis à jour correctement par la méthode qui ajoute le Total déclarations valides completés incompletes architects|Des listes pour  savoir si les mis a jour sont sont correctes pour les declarations valides et incompletes faites pour l'Ordre **Architectes**|Elle doit retourner une liste des données valident pour les déclarations faites pour l'Ordre **Architectes**  (ce sont des entiers).|Faible
+ ST - 004 | CT - 045 |Vérifier si les données sont mis à jour correctement par la méthode qui ajoute le Total déclarations valides completés incompletes géologues|Des listes pour  savoir si les mis a jour sont sont correctes pour les declarations valides et incompletes faites pour l'Ordre **géologues**|Elle doit retourner une liste des données valident pour les déclarations faites pour l'Ordre **géologues**  (ce sont des entiers).|Faible
+ ST - 004 | CT - 046 |Vérifier si les données sont mis à jour correctement par la méthode qui ajoute le Total déclarations valides completés incompletes psychologues|Des listes pour  savoir si les mis a jour sont sont correctes pour les declarations valides et incompletes faites pour l'Ordre **psychologues**|Elle doit retourner une liste des données valident pour les déclarations faites pour l'Ordre **psychologues**  (ce sont des entiers).|Faible
+ ST - 004 | CT - 047 |Vérifier si les données sont mis à jour correctement par la méthode qui ajoute le Total déclarations valides completés incompletes podiatres|Des listes pour  savoir si les mis a jour sont sont correctes pour les declarations valides et incompletes faites pour l'Ordre **podiatres**|Elle doit retourner une liste des données valident pour les déclarations faites pour l'Ordre **podiatres**  (ce sont des entiers).|Faible
+ ST - 004 | CT - 048 |Vérifier si les données sont mis à jour correctement par la méthode ajouter nombre déclarations numero permis invalide|Des listes pour  savoir si les mis a jour sont sont correctes pour les declarations valides et incompletes faites pour le numéro de permis invalide.|Elle doit retourner une liste des données valident pour les déclarations faites pour l'ajout de numéro de permis invalide dans les statiques (ce sont des entiers).|Faible
+ ST - 004 |CT - 049|Vérifier si les données sont extraites du fichier texte statistiques|Des listes pour effectuer une comparaison entre le résultat attendu de la méthode et le résultat obtenu.|Elle doit retourner une liste des données valident  (ce sont des entiers).|Moyenne
+ ST - 004 |CT - 050|Vérifier si les données sont mis à jour correctement par la méthode qui ajoute le Total declarations traitée.|Des listes pour savoir si les mis a jour sont  correcte par la méthode à tester.|Elle doit retourner une liste des données valident  (ce sont des entiers).|Faible

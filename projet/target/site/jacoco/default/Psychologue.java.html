@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Psychologue.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JsonTutorial</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Psychologue.java</span></div><h1>Psychologue.java</h1><pre class="source lang-java linenums">import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class Psychologue extends ActivitesValidation {
+
+    public Psychologue(String inputFile, JSONObject jsonObj) {
+<span class="fc" id="L11">        super(inputFile);</span>
+<span class="fc" id="L12">        super.jsonObj = jsonObj;</span>
+<span class="fc" id="L13">    }</span>
+
+    // la liste des cycles valides de l'ordre psychologues.
+<span class="fc" id="L16">    public static final ArrayList&lt;String&gt; LISTE_CYCLE_VALIDES_PSYCHOLOGUES =</span>
+<span class="fc" id="L17">            new ArrayList&lt;&gt;(Arrays.asList(&quot;2018-2023&quot;));</span>
+
+    // message d'erreur pour la categorie cours de l'ordre psychologues.
+    public static final String MSG_NBR_HEURE_COURS_INFERIEUR_25 =
+            &quot; Erreur, le nombre d'heures de la catégorie cours &quot;
+                    + &quot;dans l'ordre psychologue est inférieur à 25&quot;;
+
+
+    /**
+     * Méthode qui vérifie si un cycle est valide ou non.
+     *
+     * @return informations sur la validité du cycle.
+     */
+    public String validerDateDuCyclePsychologues() {
+<span class="fc" id="L31">        String cycleInformation = &quot;&quot;;</span>
+<span class="fc" id="L32">        String cycle = jsonObj.getString(&quot;cycle&quot;);</span>
+
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (!cycle.equals(LISTE_CYCLE_VALIDES_PSYCHOLOGUES.get(0))) {</span>
+<span class="fc" id="L35">            cycleInformation = &quot;Cycle d'activite invalide.&quot;;</span>
+        }
+
+<span class="fc" id="L38">        return cycleInformation;</span>
+    }
+
+
+    /**
+     * Méthode qui vérifie si l'année, le mois et le jour d'une activité sont valides
+     * pour le cycle 2018-2023 pour l'ordre des psychologues.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerMoisAnneeJourCycleDixHuitVingtTroisPsychologues(int indice) {
+<span class="fc" id="L50">        boolean resultat = false;</span>
+<span class="fc" id="L51">        JSONArray activites =</span>
+<span class="fc" id="L52">                (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc" id="L53">        String date = activites.getJSONObject(indice).getString(&quot;date&quot;);</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        if (date.length() == 10)</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            if (estValide(indice))</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">                resultat = !resultat;</span>
+
+<span class="fc" id="L58">        return resultat;</span>
+    }
+
+    /**
+     * Cette methode valide si le cycle de l'ordre psychologues est valide
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si le cycle est valide, false sinon.
+     */
+    private boolean estValide(int indice) {
+
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        return validerAnneeDeuxMilleDixHuitPsychologues(indice)</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">                || validerAnneeDeuxMilleDixNeuf(indice)</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">                || validerAnneeDeuxMilleVingt(indice)</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">                || validerAnneeDeuxMilleVingtUn(indice)</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">                || validerAnneeDeuxMilleVingtDeux(indice)</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">                || validerAnneeDeuxMilleVingtTroisPsychologues(indice);</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année le mois et le jour d'une activité
+     * pour annee 2018 pour l'ordre des psychologues.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerAnneeDeuxMilleDixHuitPsychologues(int indice) {
+<span class="fc" id="L85">        String annee = extraireDonnees(indice).get(1);</span>
+<span class="fc" id="L86">        return annee.equals(&quot;2018&quot;);</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année et le mois et le jour d'une activité
+     * sont valides pour annee 2019 pour l'ordre des architectes, geologues et
+     * psychologues.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerAnneeDeuxMilleDixNeuf(int indice) {
+<span class="fc" id="L98">        String annee = extraireDonnees(indice).get(1);</span>
+<span class="fc" id="L99">        return annee.equals(&quot;2019&quot;);</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année et le mois et le jour d'une activité
+     * sont valides pour annee 2020 pour l'ordre des architectes, geologues et
+     * psychologues.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerAnneeDeuxMilleVingt(int indice) {
+<span class="fc" id="L111">        String annee = extraireDonnees(indice).get(1);</span>
+<span class="fc" id="L112">        return annee.equals(&quot;2020&quot;);</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année le mois et le jour d'une activité
+     * pour annee 2021 pour l'ordre des architectes et psychologues.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerAnneeDeuxMilleVingtUn(int indice) {
+<span class="fc" id="L123">        String annee = extraireDonnees(indice).get(1);</span>
+<span class="fc" id="L124">        return annee.equals(&quot;2021&quot;);</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année le mois et le jour d'une activité
+     * pour annee 2022 pour l'ordre des psychologues.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerAnneeDeuxMilleVingtDeux(int indice) {
+<span class="fc" id="L135">        String annee = extraireDonnees(indice).get(1);</span>
+<span class="fc" id="L136">        return annee.equals(&quot;2022&quot;);</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année le mois et le jour
+     * d'une activité pour annee 2022 pour l'ordre des architectes.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerAnneeDeuxMilleVingtTroisPsychologues(int indice) {
+<span class="fc" id="L147">        String annee = extraireDonnees(indice).get(1);</span>
+<span class="fc" id="L148">        String mois = extraireDonnees(indice).get(2);</span>
+<span class="fc bfc" id="L149" title="All 4 branches covered.">        return (((mois.equals(&quot;01&quot;) &amp;&amp; extraireDonnees(indice).get(3).equals(&quot;01&quot;)))</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">                &amp;&amp; annee.equals(&quot;2023&quot;));</span>
+    }
+
+    /**
+     * Méthode qui vérifie la validité des dates de toutes les activites
+     * de l'ordre des psychologues.
+     *
+     * @return ne ArrayList de toutes les activités invalides avec leurs
+     * messages d'erreur.
+     */
+    public ArrayList&lt;String&gt; validerDateDesActivitesPsychologues() {
+<span class="nc" id="L161">        ArrayList&lt;String&gt; activitesInformation = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L162">        JSONArray activites =</span>
+<span class="nc" id="L163">                (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">            if ((!validerMoisAnneeJourCycleDixHuitVingtTroisPsychologues(i))</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">                    &amp;&amp; validerDatesExtraite(i)) {</span>
+<span class="nc" id="L167">                activitesInformation.add(&quot;La date de l'activite &quot; +</span>
+<span class="nc" id="L168">                        activites.getJSONObject(i).getString(&quot;description&quot;) +</span>
+                        &quot; est invalide&quot;);
+            }
+        }
+<span class="nc" id="L172">        return activitesInformation;</span>
+    }
+
+
+    /**
+     * Methode qui retourne la liste des dates non valides
+     *
+     * @return une liste contenant des dates invalides
+     */
+    public ArrayList&lt;String&gt; validerDateDesActivitesBoolPsychologue() {
+<span class="fc" id="L182">        ArrayList&lt;String&gt; resultat = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L183">        JSONArray activites =</span>
+<span class="fc" id="L184">                (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">            if (!validerMoisAnneeJourCycleDixHuitVingtTroisPsychologues(i)</span>
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">                    &amp;&amp; validerDatesExtraite(i)) {</span>
+<span class="fc" id="L188">                resultat.add(activites.getJSONObject(i).getString(&quot;date&quot;));</span>
+            }
+        }
+<span class="fc" id="L191">        return resultat;</span>
+    }
+
+    /**
+     * Cette methode verifie si le nombre d'heure de la catégorie cours
+     * est inférieur a 25 dans l'ordre psychologue.
+     *
+     * @return une liste contenant des messages à afficher dans le fichier JSON
+     * de sortie
+     */
+    public ArrayList&lt;String&gt; validerNbrHeureParCategoriePsychologue() {
+<span class="fc" id="L202">        ArrayList&lt;String&gt; resultat = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L203">        ArrayList&lt;String&gt; listeVide = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        if (validerNbrHeuresCategorie(&quot;cours&quot;, 25, listeVide))</span>
+<span class="fc" id="L205">            resultat.add(MSG_NBR_HEURE_COURS_INFERIEUR_25);</span>
+
+<span class="fc" id="L207">        return resultat;</span>
+    }
+    /**
+     * verifie si le nombre de permis commence par [A,R,S,Z] et suivi de 4 chiffres
+     *
+     * @return True si le numero de permis est valide, False sinon
+     */
+    public boolean validerNumeroPermisPsychologue() {
+<span class="nc" id="L215">        String numPermis = jsonObj.getString(&quot;numero_de_permis&quot;);</span>
+<span class="nc" id="L216">        return numPermis.matches(&quot;\\d{5}[-]\\d{2}&quot;);</span>
+    }
+
+    /**
+     * Methdoe qui stock les messages d'erreur qu'on va afficher dans
+     * le fichier de sortie dans une liste de chaine de caractère.
+     *
+     * @return une liste des messages d'erreur
+     */
+    public ArrayList&lt;String&gt; stockerMessagesErreursResult() {
+<span class="nc" id="L226">        ArrayList&lt;String&gt; resultat = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L227">        resultat.addAll(stockChaineMessagesErreursDansListe(genererMsgErreurNumeroPermis()));</span>
+<span class="nc" id="L228">        resultat.addAll(stockChaineMessagesErreursDansListe(validerDateDuCyclePsychologues()));</span>
+<span class="nc" id="L229">        resultat.addAll(stockListeMessagesErreurDansListe(validerDateDesActivitesPsychologues()));</span>
+<span class="nc" id="L230">        resultat.addAll(stockListeMessagesErreurDansListe(retournerMssgErrCategInvalid()));</span>
+<span class="nc" id="L231">        resultat.addAll(stockListeMessagesErreurDansListe(validerNbrHeureParCategoriePsychologue()));</span>
+<span class="nc" id="L232">        resultat.addAll(stockChaineMessagesErreursDansListe(validerNbrHeuresFormation(90, validerDateDesActivitesBoolPsychologue(), 0</span>
+        )));
+<span class="nc" id="L234">        resultat.addAll(stockChaineMessagesErreursDansListe(validerCategoriesSelectionnes(</span>
+<span class="nc" id="L235">                validerDateDesActivitesPsychologues())));</span>
+<span class="nc" id="L236">        resultat.addAll(stockListeMessagesErreurDansListe(validerHeuresActivite()));</span>
+<span class="nc" id="L237">        resultat.addAll(stockListeMessagesErreurDansListe(genererMsgErrSommeHeureParJour()));</span>
+
+
+<span class="nc" id="L240">        return resultat;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,44 @@
+{
+  "numero_de_permis": "A0001",
+  "cycle": "2018-2023",
+  "ordre": "psychologues",
+  "heures_transferees_du_cycle_precedent": 2,
+  "activites": [
+    {
+      "description": "Cours sur la déontologie",
+      "categorie": "présentation",
+      "heures": 10,
+      "date": "2021-03-20"
+    },
+    {
+      "description": "Cours sur la déontologie",
+      "categorie": "présentation",
+      "heures": 10,
+      "date": "2021-03-20"
+    },
+    {
+      "description": "Cours sur la déontologie",
+      "categorie": "présentation",
+      "heures": 5,
+      "date": "2021-03-20"
+    },
+    {
+      "description": "Cours sur l'anatomie",
+      "categorie": "projet de recherche",
+      "heures": 10,
+      "date": "2021-03-19"
+    },
+    {
+      "description": "Cours sur l'anatomie",
+      "categorie": " projet de recherche",
+      "heures": 10,
+      "date": "2021-03-19"
+    },
+    {
+      "description": "Rédaction pour le magazine Architecture moderne",
+      "categorie": "projet de recherche",
+      "heures": 10,
+      "date": "2021-10-22"
+    }
+  ]
+}

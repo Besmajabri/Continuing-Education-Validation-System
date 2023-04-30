@@ -1,0 +1,40 @@
+{
+  "numero_de_permis": "98021-09",
+  "cycle": "2018-203",
+  "ordre": "psychologues",
+  "nom": "besma",
+  "prenom": "jabri",
+  "sexe": 9,
+  "activites": [
+    {
+      "description": "Cours sur la déontologie",
+      "categorie": "cours",
+      "heures": -1,
+      "date": "2021-03-20"
+    },
+    {
+      "description": "match hockey",
+      "categorie": "sport",
+      "heures": 10,
+      "date": "2021-01-07"
+    },
+    {
+      "description": "Rédaction pour le magazine Architecture moderne",
+      "categorie": "rédaction professionnelle",
+      "heures": 4,
+      "date": "2021-10-22"
+    },
+    {
+      "description": "Participation à un groupe de discussion sur le partage des projets architecturaux de plus de 20 ans",
+      "categorie": "groupe de discussion",
+      "heures": 6,
+      "date": "2021-04-01"
+    },
+    {
+      "description": "Visite d'établissements architecturaux",
+      "categorie": "voyage",
+      "heures": 2,
+      "date": "2021-02-02"
+    }
+  ]
+}

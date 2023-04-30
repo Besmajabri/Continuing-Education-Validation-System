@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Geologue.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JsonTutorial</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Geologue.java</span></div><h1>Geologue.java</h1><pre class="source lang-java linenums">import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+import org.checkerframework.checker.units.qual.A;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class Geologue extends ActivitesValidation {
+
+    //la liste des cycles valides pour l'ordre geologues
+<span class="fc" id="L13">    public static final ArrayList&lt;String&gt; LISTE_CYCLE_VALIDES_GEOLOGUES =</span>
+<span class="fc" id="L14">            new ArrayList&lt;&gt;(Arrays.asList(&quot;2018-2021&quot;));</span>
+
+    //message d'erreur pour la categorie cours de l'ordre geologues
+    public static final String MSG_ERR_COURS_VINGT_DEUX = &quot; Erreur, le nombre &quot;
+            + &quot;d'heures de la catégorie cours dans l'ordre géologues &quot;
+            + &quot;est inférieur à 22&quot;;
+
+    //message d'erreur pour la categorie projet de recherche de l'ordre geologues
+    public static final String MSG_ERR_PROJET_RECHERCHE_TROIS = &quot; Erreur, le &quot;
+            + &quot;nombre d'heures de la categorie projet de recherche dans l'ordre&quot;
+            + &quot; géologues est inférieur à 3&quot;;
+
+    //message d'erreur pour la categorie groupe de discussion de l'ordre geologues
+    public static final String MSG_ERR_GROUPE_DISCUSSION_UN = &quot; Erreur, le &quot;
+            + &quot;nombre d'heures de la categorie groupe de discussion dans &quot;
+            + &quot;l'ordre géologues est inférieur à 1&quot;;
+
+    public Geologue(String inputFile, JSONObject jsonObj) {
+<span class="fc" id="L32">        super(inputFile);</span>
+<span class="fc" id="L33">        super.jsonObj = jsonObj;</span>
+<span class="fc" id="L34">    }</span>
+
+    /**
+     * Méthode qui vérifie si un cycle est valide ou non.
+     *
+     * @return informations sur la validité du cycle.
+     */
+    public String validerDateDuCycleGeologues() {
+<span class="fc" id="L42">        String cycleInformation = &quot;&quot;;</span>
+<span class="fc" id="L43">        String cycle = jsonObj.getString(&quot;cycle&quot;);</span>
+
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (!cycle.equals(LISTE_CYCLE_VALIDES_GEOLOGUES.get(0))) {</span>
+<span class="fc" id="L46">            cycleInformation = &quot;Cycle d'activite invalide.&quot;;</span>
+        }
+
+<span class="fc" id="L49">        return cycleInformation;</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année, le mois et le jour d'une activité
+     * sont valides pour le cycle 2018-2021 pour l'ordre des geologues.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerMoisAnneeJourCycleDixHuitVingtUnGeologues(int indice) {
+<span class="fc" id="L60">        boolean resultat = false;</span>
+<span class="fc" id="L61">        JSONArray activites =</span>
+<span class="fc" id="L62">                (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc" id="L63">        String date = activites.getJSONObject(indice).getString(&quot;date&quot;);</span>
+
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (date.length() == 10) {</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">            if ((validerAnneeDeuxMilleDixHuitGeologues(indice)</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">                    || validerAnneeDeuxMilleDixNeuf(indice)</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">                    || validerAnneeDeuxMilleVingt(indice)</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">                    || validerAnneeDeuxMilleVingtUnGeologues(indice))) {</span>
+<span class="fc" id="L70">                resultat = true;</span>
+            }
+        }
+<span class="fc" id="L73">        return resultat;</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année le mois et le jour d'une activité
+     * pour annee 2018 du cycle 2016-2018 pour l'ordre des architectes.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerAnneeDeuxMilleDixHuitGeologues(int indice) {
+<span class="fc" id="L84">        String mois = extraireDonnees(indice).get(2);</span>
+<span class="fc" id="L85">        String annee = extraireDonnees(indice).get(1);</span>
+
+<span class="fc bfc" id="L87" title="All 6 branches covered.">        return ((!mois.equals(&quot;01&quot;) &amp;&amp; !mois.equals(&quot;02&quot;) &amp;&amp; !mois.equals(&quot;03&quot;)</span>
+<span class="fc bfc" id="L88" title="All 4 branches covered.">                &amp;&amp; !mois.equals(&quot;04&quot;) &amp;&amp; !mois.equals(&quot;05&quot;))</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">                &amp;&amp; annee.equals(&quot;2018&quot;));</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année et le mois et le jour d'une activité
+     * sont valides pour annee 2019 pour l'ordre des architectes, geologues et
+     * psychologues.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerAnneeDeuxMilleDixNeuf(int indice) {
+<span class="fc" id="L101">        String annee = extraireDonnees(indice).get(1);</span>
+<span class="fc" id="L102">        return annee.equals(&quot;2019&quot;);</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année et le mois et le jour d'une activité
+     * sont valides pour annee 2020 pour l'ordre des architectes, geologues et
+     * psychologues.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerAnneeDeuxMilleVingt(int indice) {
+<span class="fc" id="L114">        String annee = extraireDonnees(indice).get(1);</span>
+<span class="fc" id="L115">        return annee.equals(&quot;2020&quot;);</span>
+    }
+
+    /**
+     * Méthode qui vérifie si l'année le mois et le jour d'une activité
+     * pour annee 2021 pour l'ordre des geologues.
+     *
+     * @param indice indice de l'activité ciblée
+     * @return true si l'année, le mois et le jour sont valides ou false sinon.
+     */
+    public boolean validerAnneeDeuxMilleVingtUnGeologues(int indice) {
+<span class="fc" id="L126">        String annee = extraireDonnees(indice).get(1);</span>
+<span class="fc" id="L127">        String mois = extraireDonnees(indice).get(2);</span>
+<span class="fc bfc" id="L128" title="All 6 branches covered.">        return ((mois.equals(&quot;01&quot;) || mois.equals(&quot;02&quot;) || mois.equals(&quot;03&quot;)</span>
+<span class="fc bfc" id="L129" title="All 6 branches covered.">                || mois.equals(&quot;04&quot;) || mois.equals(&quot;05&quot;) || (mois.equals(&quot;06&quot;)</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">                &amp;&amp; extraireDonnees(indice).get(3).equals(&quot;01&quot;)))</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">                &amp;&amp; annee.equals(&quot;2021&quot;));</span>
+    }
+
+    /**
+     * Méthode qui vérifie la validité des dates de toutes les activites
+     * de l'ordre des geologues.
+     *
+     * @return ne ArrayList de toutes les activités invalides avec leurs
+     * messages d'erreur.
+     */
+    public ArrayList&lt;String&gt; validerDateDesActivitesGeologues() {
+<span class="nc" id="L142">        ArrayList&lt;String&gt; activitesInformation = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L143">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">            if ((!validerMoisAnneeJourCycleDixHuitVingtUnGeologues(i))</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">                    &amp; validerDatesExtraite(i)) {</span>
+<span class="nc" id="L148">                activitesInformation.add(&quot;La date de l'activite &quot;</span>
+<span class="nc" id="L149">                        + activites.getJSONObject(i).getString(&quot;description&quot;)</span>
+                        + &quot; est invalide&quot;);
+            }
+        }
+<span class="nc" id="L153">        return activitesInformation;</span>
+    }
+
+    /**
+     * Methode qui retourne la liste des dates non valides
+     *
+     * @return une liste contenant des dates invalides
+     */
+    public ArrayList&lt;String&gt; validerDateDesActivitesBoolGeologue() {
+<span class="fc" id="L162">        ArrayList&lt;String&gt; resultat = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L163">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+
+<span class="fc bfc" id="L165" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">            if (!validerMoisAnneeJourCycleDixHuitVingtUnGeologues(i)</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">                    &amp;&amp; validerDatesExtraite(i)) {</span>
+<span class="fc" id="L168">                resultat.add(activites.getJSONObject(i).getString(&quot;date&quot;));</span>
+            }
+        }
+<span class="fc" id="L171">        return resultat;</span>
+    }
+
+
+
+        /**
+         * Methdoe qui stock les messages d'erreur qu'on va affichier dans le fichier de sortie
+         * dans une liste de String
+         *
+         * @return une liste des messages d'erreur
+         */
+        public ArrayList&lt;String&gt; stockerMessagesErreursResult () {
+<span class="nc" id="L183">            ArrayList&lt;String&gt; resultat = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L184">            String ordre = jsonObj.getString(&quot;ordre&quot;);</span>
+<span class="nc bnc" id="L185" title="All 3 branches missed.">            switch (ordre) {</span>
+                case &quot;géologues&quot; :
+<span class="nc" id="L187">                    resultat.addAll(stockChaineMessagesErreursDansListe(validerNbrHeuresFormation(55, validerDateDesActivitesBoolGeologue(),</span>
+                            0)));
+<span class="nc" id="L189">                    resultat.addAll(stockChaineMessagesErreursDansListe(genererMsgErreurNumeroPermis()));</span>
+<span class="nc" id="L190">                    resultat.addAll(stockChaineMessagesErreursDansListe(validerDateDuCycleGeologues()));</span>
+<span class="nc" id="L191">                    resultat.addAll(stockListeMessagesErreurDansListe(validerDateDesActivitesGeologues()));</span>
+<span class="nc" id="L192">                    resultat.addAll(stockListeMessagesErreurDansListe(retournerMssgErrCategInvalid()));</span>
+<span class="nc" id="L193">                    resultat.addAll(stockListeMessagesErreurDansListe(validerNombreHeureCategorieDonnee()));</span>
+<span class="nc" id="L194">                    resultat.addAll(stockListeMessagesErreurDansListe(validerHeuresActivite()));</span>
+<span class="nc" id="L195">                    resultat.addAll(stockListeMessagesErreurDansListe(genererMsgErrSommeHeureParJour()));</span>
+<span class="nc" id="L196">                    break;</span>
+                case &quot;podiatres&quot; :
+<span class="nc" id="L198">                    resultat.addAll(stockChaineMessagesErreursDansListe(validerNbrHeuresFormation(60, validerDateDesActivitesBoolGeologue(),</span>
+                            0)));
+<span class="nc" id="L200">                    resultat.addAll(stockChaineMessagesErreursDansListe(genererMsgErreurNumeroPermis()));</span>
+<span class="nc" id="L201">                    resultat.addAll(stockChaineMessagesErreursDansListe(validerDateDuCycleGeologues()));</span>
+<span class="nc" id="L202">                    resultat.addAll(stockListeMessagesErreurDansListe(validerDateDesActivitesGeologues()));</span>
+<span class="nc" id="L203">                    resultat.addAll(stockListeMessagesErreurDansListe(retournerMssgErrCategInvalid()));</span>
+<span class="nc" id="L204">                    resultat.addAll(stockListeMessagesErreurDansListe(validerNombreHeureCategorieDonnee()));</span>
+<span class="nc" id="L205">                    resultat.addAll(stockListeMessagesErreurDansListe(validerHeuresActivite()));</span>
+<span class="nc" id="L206">                    resultat.addAll(stockListeMessagesErreurDansListe(genererMsgErrSommeHeureParJour()));</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">                    for (String x: resultat) {</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">                        if (x.contains(&quot;géologues&quot;)) {</span>
+<span class="nc" id="L209">                            resultat.set(resultat.indexOf(x),x.replace(&quot;géologues&quot;,&quot;podiatres&quot;));</span>
+                        }
+<span class="nc" id="L211">                    }</span>
+                    break;
+
+            }
+
+
+
+<span class="nc" id="L218">            return resultat;</span>
+        }
+
+
+    }
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

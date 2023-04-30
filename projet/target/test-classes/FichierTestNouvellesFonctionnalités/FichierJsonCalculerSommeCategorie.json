@@ -1,0 +1,47 @@
+{
+  "numero_de_permis": "34438-98",
+  "cycle": "2018-2023",
+  "heures_transferees_du_cycle_precedent": 2,
+  "ordre": "psychologues",
+  "nom": "Jabri",
+  "prenom": "Besma",
+  "sexe": 2,
+  "activites": [
+    {
+      "description": "Rédaction pour le magazine Architecture",
+      "categorie": "cours",
+      "heures": 4,
+      "date": "2020-01-01"
+    },
+    {
+      "description": "Rédaction pour le magazine Architecture",
+      "categorie": "projet de recherche",
+      "heures": 5,
+      "date": "2020-01-01"
+    },
+    {
+      "description": "Rédaction pour le magazine Architecture moderne",
+      "categorie": "projet de recherche",
+      "heures": 14,
+      "date": "2020-01-19"
+    },
+    {
+      "description": "Rédaction pour le magazine Architecture moderne",
+      "categorie": "rédaction professionnelle",
+      "heures": 4,
+      "date": "2021-01-05"
+    },
+    {
+      "description": "Rédaction pour le magazine Architecture moderne",
+      "categorie": "groupe de discussion",
+      "heures": 10,
+      "date": "2020-01-02"
+    },
+    {
+      "description": "Visite d'établissements architecturaux",
+      "categorie": "cours",
+      "heures": 2,
+      "date": "2018-02-02"
+    }
+  ]
+}

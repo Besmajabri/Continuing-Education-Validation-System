@@ -1,0 +1,32 @@
+{
+  "numero_de_permis": "A0001",
+  "cycle": "2018-2020",
+  "heures_transferees_du_cycle_precedent": 2,
+  "ordre": "architecte",
+  "activites": [
+    {
+      "description": "Rédaction pour le magazine Architecture moderne",
+      "categorie": "projet de recherche",
+      "heures": -14,
+      "date": "2017-02-02"
+    },
+    {
+      "description": "Rédaction pour le magazine Architecture moderne",
+      "categorie": "rédaction professionnelle",
+      "heures": 4,
+      "date": "2021-01-02"
+    },
+    {
+      "description": "Participation à un groupe",
+      "categorie": "",
+      "heures": 6,
+      "date": "2018-09-01"
+    },
+    {
+      "description": "Visite d'établissements architecturaux",
+      "categorie": "présentation",
+      "heures": 2,
+      "date": "2019-03-02"
+    }
+  ]
+}

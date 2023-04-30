@@ -1,0 +1,26 @@
+{
+  "numero_de_permis": "12345",
+  "cycle": "2016-2018",
+  "heures_transferees_du_cycle_precedent": 2,
+  "ordre": "podiatres",
+  "activites": [
+    {
+      "description": "Rédaction pour le magazine Architecture moderne",
+      "categorie": "cours",
+      "heures": 14,
+      "date": "2020-01-01"
+    },
+    {
+      "description": "Rédaction pour le magazine Architecture moderne",
+      "categorie": "rédaction professionnelle",
+      "heures": 4,
+      "date": "2021-01-02"
+    },
+    {
+      "description": "Visite d'établissements architecturaux",
+      "categorie": "voyage",
+      "heures": 2,
+      "date": "2018-02-02"
+    }
+  ]
+}

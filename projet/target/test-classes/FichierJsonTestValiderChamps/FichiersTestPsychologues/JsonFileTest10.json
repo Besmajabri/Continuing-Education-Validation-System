@@ -1,0 +1,32 @@
+{
+  "numero_de_permis": "A0001",
+  "cycle": "2018-2023",
+  "heures_transferees_du_cycle_precedent": 2,
+  "ordre": " psychologues",
+  "activites": [
+    {
+      "description": "Cours sur la déontologie",
+      "categorie": "cours",
+      "heures": 10,
+      "date": "2019-03-20"
+    },
+    {
+      "description": "Cours sur la déontologie",
+      "categorie": "cours",
+      "heures": 10,
+      "date": "2019-03-20"
+    },
+    {
+      "description": "Cours sur la déontologie",
+      "categorie": "cours",
+      "heures": 2,
+      "date": "2019-03-20"
+    },
+    {
+      "description": "Cours sur la déontologie",
+      "categorie": "conférence",
+      "heures": 10,
+      "date": "2019-03-20"
+    }
+  ]
+}

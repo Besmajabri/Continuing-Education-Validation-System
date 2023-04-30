@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Statistique.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JsonTutorial</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Statistique.java</span></div><h1>Statistique.java</h1><pre class="source lang-java linenums">import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+import org.apache.commons.io.IOUtils;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+
+<span class="nc" id="L12">public class Statistique {</span>
+
+    /**
+     * Méthode qui extrait différentes valeurs du fichier de statistiques.
+     * @param cheminFichier emplacement du fichier statistiques.
+     * @return ArrayList des différentes valeurs.
+     */
+    public static ArrayList&lt;Integer&gt; extraireValeurs(String cheminFichier) throws IOException {
+<span class="fc" id="L20">        ArrayList&lt;Integer&gt; sortie = new ArrayList&lt;&gt;(); String c, valeurExtraite = &quot;&quot;;</span>
+<span class="fc" id="L21">        FileReader ficALire = new FileReader(cheminFichier);</span>
+<span class="fc" id="L22">        BufferedReader entree = new BufferedReader(ficALire);</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        while (entree.ready()) {</span>
+<span class="fc" id="L24">            c = entree.readLine();</span>
+<span class="fc" id="L25">            valeurExtraite = c.substring(c.indexOf(&quot;:&quot;) + 1);</span>
+<span class="fc" id="L26">            sortie.add(Integer.valueOf(valeurExtraite.trim()));</span>
+        }
+<span class="fc" id="L28">        entree.close(); ficALire.close();</span>
+<span class="fc" id="L29">        return sortie;</span>
+    }
+
+    /**
+     * Méthode qui calcule le nombre total de déclarations traitées
+     * @param listeDesValeurs liste des valeurs extraites du fichier
+     *                        statistiques.
+     */
+    public static void ajouterTotalDeclarationsTraitees(ArrayList&lt;Integer&gt; listeDesValeurs) {
+<span class="fc" id="L38">        listeDesValeurs.set(0, listeDesValeurs.get(0) + 1);</span>
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * Méthode qui calcule le nombre total de déclarations completes
+     * et incompletes.
+     * @param listeDesValeurs liste des valeurs extraites du fichier
+     *      *                 statistiques.
+     * @param outputFile fichier contenant des informations sur la
+     *                   validité des activités.
+     * @throws IOException exception levée si l'activité est invalide.
+     */
+    public static void ajouterTotalDeclarationsCompletes(ArrayList&lt;Integer&gt; listeDesValeurs, String outputFile) throws IOException {
+<span class="fc" id="L51">        String stringJson = IOUtils.toString(new FileInputStream(outputFile), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L52">        JSONObject jsonObj = (JSONObject) JSONSerializer.toJSON(stringJson);</span>
+<span class="fc" id="L53">        String complet = jsonObj.getString(&quot;complet&quot;);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (complet.equals(&quot;true&quot;)) {</span>
+<span class="fc" id="L55">            listeDesValeurs.set(1, listeDesValeurs.get(1) + 1);</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        } else if (complet.equals(&quot;false&quot;)) {</span>
+<span class="fc" id="L57">            listeDesValeurs.set(2, listeDesValeurs.get(2) + 1);</span>
+        }
+<span class="fc" id="L59">    }</span>
+
+    /**
+     * Méthode qui calcule le nombre total de déclarations completes
+     * par des femmes hommes et sexe inconnu.
+     * @param listeDesValeurs liste des valeurs extraites du fichier
+     *                        statistiques.
+     * @param inputFile fichier contenant des informations sur les
+     *                  activités.
+     * @throws IOException exception levée si l'activité est invalide.
+     */
+    public static void ajouterTotalDeclarationsFaitesSexe(ArrayList&lt;Integer&gt; listeDesValeurs, String inputFile) throws IOException {
+<span class="fc" id="L71">        String stringJson = IOUtils.toString(new FileInputStream(inputFile), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L72">        JSONObject jsonObj = (JSONObject) JSONSerializer.toJSON(stringJson);</span>
+<span class="fc" id="L73">        String sexe = jsonObj.getString(&quot;sexe&quot;);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (sexe.equals(&quot;1&quot;)) {</span>
+<span class="fc" id="L75">            listeDesValeurs.set(3, listeDesValeurs.get(3) + 1);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        } else if (sexe.equals(&quot;2&quot;)) {</span>
+<span class="fc" id="L77">            listeDesValeurs.set(4, listeDesValeurs.get(4) + 1);</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        } else if (sexe.equals(&quot;0&quot;)) {</span>
+<span class="fc" id="L79">            listeDesValeurs.set(5, listeDesValeurs.get(5) + 1);</span>
+        }
+<span class="fc" id="L81">    }</span>
+
+    /**
+     * Méthode qui calcule le nombre total d'activités dans les déclarations.
+     * @param listeDesValeurs liste des valeurs extraites du fichier
+     *                        statistiques.
+     * @param inputFile fichier contenant des informations sur les
+     *                  activités.
+     * @throws IOException exception levée si l'activité est invalide.
+     */
+    public static void ajouterNombreTotalActivitesDeclarations(ArrayList&lt;Integer&gt; listeDesValeurs, String inputFile) throws IOException {
+<span class="fc" id="L92">        int total = 0;</span>
+<span class="fc" id="L93">        String stringJson = IOUtils.toString(new FileInputStream(inputFile), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L94">        JSONObject jsonObj = (JSONObject) JSONSerializer.toJSON(stringJson);</span>
+<span class="fc" id="L95">        JSONArray activites = (JSONArray) JSONSerializer.toJSON(jsonObj.getString(&quot;activites&quot;));</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        for (int i = 0; i &lt; activites.size(); i++) {</span>
+<span class="fc" id="L97">            ++ total;</span>
+        }
+<span class="fc" id="L99">        listeDesValeurs.set(6, listeDesValeurs.get(6) + total);</span>
+<span class="fc" id="L100">    }</span>
+
+    /**
+     * Méthode qui calcule le nombre total de declarations valide et
+     * invalide pour l'ordre des architects.
+     * @param listeDesValeurs liste des valeurs extraites du fichier
+     *                        statistiques.
+     * @param inputFile fichier contenant la liste d'activités.
+     * @param outputFile fichier contenant des informations sur la
+     *      *                   validité des activités.
+     * @throws IOException exception levée si l'activité est invalide.
+     */
+    public static void ajouterDeclarationsValidesCompletesIncompletesArchitects(ArrayList&lt;Integer&gt; listeDesValeurs, String inputFile, String outputFile) throws IOException {
+<span class="fc" id="L113">        String stringJsonInput = IOUtils.toString(new FileInputStream(inputFile), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L114">        String stringJsonOutput = IOUtils.toString(new FileInputStream(outputFile), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L115">        JSONObject jsonObjInput = (JSONObject) JSONSerializer.toJSON(stringJsonInput);</span>
+<span class="fc" id="L116">        JSONObject jsonObjOutput = (JSONObject) JSONSerializer.toJSON(stringJsonOutput);</span>
+<span class="fc" id="L117">        String ordre = jsonObjInput.getString(&quot;ordre&quot;);</span>
+<span class="fc" id="L118">        String complet = jsonObjOutput.getString(&quot;complet&quot;);</span>
+<span class="pc bpc" id="L119" title="2 of 4 branches missed.">        if (complet.equals(&quot;true&quot;) &amp;&amp; ordre.equals(&quot;architectes&quot;)) {</span>
+<span class="fc" id="L120">            listeDesValeurs.set(11, listeDesValeurs.get(11) + 1);</span>
+<span class="nc bnc" id="L121" title="All 4 branches missed.">        } else if (complet.equals(&quot;false&quot;) &amp;&amp; ordre.equals(&quot;architectes&quot;)) {</span>
+<span class="nc" id="L122">            listeDesValeurs.set(15, listeDesValeurs.get(15) + 1);</span>
+        }
+<span class="fc" id="L124">    }</span>
+
+    /**
+     * Méthode qui calcule le nombre total de declarations valide et
+     * invalide pour l'ordre des geologues.
+     * @param listeDesValeurs liste des valeurs extraites du fichier
+     *                        statistiques.
+     * @param inputFile fichier contenant la liste d'activités.
+     * @param outputFile fichier contenant des informations sur la
+     *      *                   validité des activités.
+     * @throws IOException exception levée si l'activité est invalide.
+     */
+    public static void ajouterDeclarationsValidesCompletesIncompletesGeologues(ArrayList&lt;Integer&gt; listeDesValeurs, String inputFile, String outputFile) throws IOException {
+<span class="fc" id="L137">        String stringJsonInput = IOUtils.toString(new FileInputStream(inputFile), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L138">        String stringJsonOutput = IOUtils.toString(new FileInputStream(outputFile), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L139">        JSONObject jsonObjInput = (JSONObject) JSONSerializer.toJSON(stringJsonInput);</span>
+<span class="fc" id="L140">        JSONObject jsonObjOutput = (JSONObject) JSONSerializer.toJSON(stringJsonOutput);</span>
+<span class="fc" id="L141">        String ordre = jsonObjInput.getString(&quot;ordre&quot;);</span>
+<span class="fc" id="L142">        String complet = jsonObjOutput.getString(&quot;complet&quot;);</span>
+<span class="pc bpc" id="L143" title="2 of 4 branches missed.">        if (complet.equals(&quot;true&quot;) &amp;&amp; ordre.equals(&quot;géologues&quot;)) {</span>
+<span class="fc" id="L144">            listeDesValeurs.set(12, listeDesValeurs.get(12) + 1);</span>
+<span class="nc bnc" id="L145" title="All 4 branches missed.">        } else if (complet.equals(&quot;false&quot;) &amp;&amp; ordre.equals(&quot;géologues&quot;)) {</span>
+<span class="nc" id="L146">            listeDesValeurs.set(16, listeDesValeurs.get(16) + 1);</span>
+        }
+<span class="fc" id="L148">    }</span>
+
+    /**
+     * Méthode qui calcule le nombre total de declarations valide et
+     * invalide pour l'ordre des psychologues.
+     * @param listeDesValeurs liste des valeurs extraites du fichier
+     *                        statistiques.
+     * @param inputFile fichier contenant la liste d'activités.
+     * @param outputFile fichier contenant des informations sur la
+     *      *                   validité des activités.
+     * @throws IOException exception levée si l'activité est invalide.
+     */
+    public static void ajouterDeclarationsValidesCompletesIncompletesPsychologues(ArrayList&lt;Integer&gt; listeDesValeurs, String inputFile, String outputFile) throws IOException {
+<span class="fc" id="L161">        String stringJsonInput = IOUtils.toString(new FileInputStream(inputFile), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L162">        String stringJsonOutput = IOUtils.toString(new FileInputStream(outputFile), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L163">        JSONObject jsonObjInput = (JSONObject) JSONSerializer.toJSON(stringJsonInput);</span>
+<span class="fc" id="L164">        JSONObject jsonObjOutput = (JSONObject) JSONSerializer.toJSON(stringJsonOutput);</span>
+<span class="fc" id="L165">        String ordre = jsonObjInput.getString(&quot;ordre&quot;);</span>
+<span class="fc" id="L166">        String complet = jsonObjOutput.getString(&quot;complet&quot;);</span>
+<span class="pc bpc" id="L167" title="2 of 4 branches missed.">        if (complet.equals(&quot;true&quot;) &amp;&amp; ordre.equals(&quot;psychologues&quot;)) {</span>
+<span class="fc" id="L168">            listeDesValeurs.set(13, listeDesValeurs.get(13) + 1);</span>
+<span class="nc bnc" id="L169" title="All 4 branches missed.">        } else if (complet.equals(&quot;false&quot;) &amp;&amp; ordre.equals(&quot;psychologues&quot;)) {</span>
+<span class="nc" id="L170">            listeDesValeurs.set(17, listeDesValeurs.get(17) + 1);</span>
+        }
+<span class="fc" id="L172">    }</span>
+
+    /**
+     * Méthode qui calcule le nombre total de declarations valide et
+     * invalide pour l'ordre des podiatres.
+     * @param listeDesValeurs liste des valeurs extraites du fichier
+     *                        statistiques.
+     * @param inputFile fichier contenant la liste d'activités.
+     * @param outputFile fichier contenant des informations sur la
+     *                   validité des activités.
+     * @throws IOException exception levée si l'activité est invalide.
+     */
+    public static void ajouterDeclarationsValidesCompletesIncompletesPodiatres(ArrayList&lt;Integer&gt; listeDesValeurs, String inputFile, String outputFile) throws IOException {
+<span class="fc" id="L185">        String stringJsonInput = IOUtils.toString(new FileInputStream(inputFile), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L186">        String stringJsonOutput = IOUtils.toString(new FileInputStream(outputFile), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L187">        JSONObject jsonObjInput = (JSONObject) JSONSerializer.toJSON(stringJsonInput);</span>
+<span class="fc" id="L188">        JSONObject jsonObjOutput = (JSONObject) JSONSerializer.toJSON(stringJsonOutput);</span>
+<span class="fc" id="L189">        String ordre = jsonObjInput.getString(&quot;ordre&quot;);</span>
+<span class="fc" id="L190">        String complet = jsonObjOutput.getString(&quot;complet&quot;);</span>
+<span class="pc bpc" id="L191" title="2 of 4 branches missed.">        if (complet.equals(&quot;true&quot;) &amp;&amp; ordre.equals(&quot;podiatres&quot;)) {</span>
+<span class="fc" id="L192">            listeDesValeurs.set(14, listeDesValeurs.get(14) + 1);</span>
+<span class="nc bnc" id="L193" title="All 4 branches missed.">        } else if (complet.equals(&quot;false&quot;) &amp;&amp; ordre.equals(&quot;podiatres&quot;)) {</span>
+<span class="nc" id="L194">            listeDesValeurs.set(18, listeDesValeurs.get(18) + 1);</span>
+        }
+<span class="fc" id="L196">    }</span>
+
+    /**
+     * Méthode qui calcule le nombre total de declarations avec
+     * permis invalide.
+     * @param listeDesValeurs liste des valeurs extraites du fichier
+     *                        statistiques.
+     * @param outputFile fichier contenant des informations sur la
+     *                   validité des activités.
+     * @throws IOException exception levée si l'activité est invalide.
+     */
+    public static void ajouterNombreDeclarationsNumeroPermisInvalide(ArrayList&lt;Integer&gt; listeDesValeurs, String outputFile) throws IOException {
+<span class="fc" id="L208">        int total = 0;</span>
+<span class="fc" id="L209">        String stringJson = IOUtils.toString(new FileInputStream(outputFile), StandardCharsets.UTF_8);</span>
+<span class="fc" id="L210">        JSONObject jsonObj = (JSONObject) JSONSerializer.toJSON(stringJson);</span>
+<span class="fc" id="L211">        String infoPermis = jsonObj.getString(&quot;erreurs&quot;);</span>
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">        if (infoPermis.contains(&quot;permis est invalide&quot;)) {</span>
+<span class="fc" id="L213">            listeDesValeurs.set(19, listeDesValeurs.get(19) + 1);</span>
+        }
+<span class="fc" id="L215">    }</span>
+
+    /**
+     * Méthode qui met à jour les données du fichier statistique.
+     * @param listeDesValeurs liste des valeurs extraites du fichier
+     *                        statistiques.
+     * @param nomFichier fichier contenant des informations sur la
+     *                   validité des activités.
+     * @throws IOException exception levée si l'activité est invalide.
+     */
+    public static void modifierValeurs(ArrayList&lt;Integer&gt; listeDesValeurs, String nomFichier) throws IOException {
+<span class="fc" id="L226">        FileWriter ficAEcrire = new FileWriter(nomFichier);</span>
+<span class="fc" id="L227">        PrintWriter sortie = new PrintWriter(ficAEcrire);</span>
+<span class="fc" id="L228">        sortie.println(&quot;Le nombre total de déclarations traitées: &quot; + listeDesValeurs.get(0));</span>
+<span class="fc" id="L229">        sortie.println(&quot;Le nombre total de déclarations complètes: &quot; + listeDesValeurs.get(1));</span>
+<span class="fc" id="L230">        sortie.println(&quot;Le nombre total de déclarations incomplètes ou invalides: &quot; + listeDesValeurs.get(2));</span>
+<span class="fc" id="L231">        sortie.println(&quot;Le nombre total de déclarations faites par des hommes: &quot; + listeDesValeurs.get(3));</span>
+<span class="fc" id="L232">        sortie.println(&quot;Le nombre total de déclarations faites par des femmes: &quot; + listeDesValeurs.get(4));</span>
+<span class="fc" id="L233">        sortie.println(&quot;Le nombre total de déclarations faites par des gens de sexe inconnu: &quot; + listeDesValeurs.get(5));</span>
+<span class="fc" id="L234">        sortie.println(&quot;Le nombre total d'activités dans les déclarations: &quot; + listeDesValeurs.get(6));</span>
+<span class="fc" id="L235">        sortie.println(&quot;Le nombre d'activités de la catégorie Architect: 10&quot;);</span>
+<span class="fc" id="L236">        sortie.println(&quot;Le nombre d'activités de la catégorie Psychologue: 10&quot;);</span>
+<span class="fc" id="L237">        sortie.println(&quot;Le nombre d'activités de la catégorie Geologue: 10&quot;);</span>
+<span class="fc" id="L238">        sortie.println(&quot;Le nombre d'activités de la catégorie Podiatres: 10&quot;);</span>
+<span class="fc" id="L239">        sortie.println(&quot;Le nombre total de déclarations valides et complètes par l'ordre des Architect: &quot; + listeDesValeurs.get(11));</span>
+<span class="fc" id="L240">        sortie.println(&quot;Le nombre total de déclarations valides et complètes par l'ordre des Psychologue: &quot; + listeDesValeurs.get(12));</span>
+<span class="fc" id="L241">        sortie.println(&quot;Le nombre total de déclarations valides et complètes par l'ordre des Geologue: &quot; + listeDesValeurs.get(13));</span>
+<span class="fc" id="L242">        sortie.println(&quot;Le nombre total de déclarations valides et complètes par l'ordre des Podiatres: &quot; + + listeDesValeurs.get(14));</span>
+<span class="fc" id="L243">        sortie.println(&quot;Le nombre total de déclarations valides et incomplètes par l'ordre des Architect: &quot; + listeDesValeurs.get(15));</span>
+<span class="fc" id="L244">        sortie.println(&quot;Le nombre total de déclarations valides et incomplètes par l'ordre des Psychologue: &quot; + listeDesValeurs.get(16));</span>
+<span class="fc" id="L245">        sortie.println(&quot;Le nombre total de déclarations valides et incomplètes par l'ordre des Geologue: &quot; + listeDesValeurs.get(17));</span>
+<span class="fc" id="L246">        sortie.println(&quot;Le nombre total de déclarations valides et incomplètes par l'ordre des Podiatres: &quot; + listeDesValeurs.get(18));</span>
+<span class="fc" id="L247">        sortie.println(&quot;Le nombre de déclarations soumises avec un numéro de permis invalide: &quot; + listeDesValeurs.get(19));</span>
+<span class="fc" id="L248">        sortie.close();</span>
+<span class="fc" id="L249">        ficAEcrire.close();</span>
+<span class="fc" id="L250">    }</span>
+
+    /**
+     * Méthode qui met à zero les données du fichier statistique.
+     * @param nomFichier fichier contenant des informations sur la
+     *                   validité des activités.
+     * @throws IOException exception levée si l'activité est invalide.
+     */
+    public static void recommencerComptage(String nomFichier) throws IOException {
+<span class="nc" id="L259">        FileWriter ficAEcrire = new FileWriter(nomFichier);</span>
+<span class="nc" id="L260">        PrintWriter sortie = new PrintWriter(ficAEcrire);</span>
+<span class="nc" id="L261">        sortie.println(&quot;Le nombre total de déclarations traitées: 0&quot;);</span>
+<span class="nc" id="L262">        sortie.println(&quot;Le nombre total de déclarations complètes: 0&quot;);</span>
+<span class="nc" id="L263">        sortie.println(&quot;Le nombre total de déclarations incomplètes ou invalides: 0&quot;);</span>
+<span class="nc" id="L264">        sortie.println(&quot;Le nombre total de déclarations faites par des hommes: 0&quot;);</span>
+<span class="nc" id="L265">        sortie.println(&quot;Le nombre total de déclarations faites par des femmes: 0&quot;);</span>
+<span class="nc" id="L266">        sortie.println(&quot;Le nombre total de déclarations faites par des gens de sexe inconnu: 0&quot;);</span>
+<span class="nc" id="L267">        sortie.println(&quot;Le nombre total d'activités dans les déclarations: 0&quot;);</span>
+<span class="nc" id="L268">        sortie.println(&quot;Le nombre d'activités de la catégorie Architect: 10&quot;);</span>
+<span class="nc" id="L269">        sortie.println(&quot;Le nombre d'activités de la catégorie Psychologue: 10&quot;);</span>
+<span class="nc" id="L270">        sortie.println(&quot;Le nombre d'activités de la catégorie Geologue: 10&quot;);</span>
+<span class="nc" id="L271">        sortie.println(&quot;Le nombre d'activités de la catégorie Podiatres: 10&quot;);</span>
+<span class="nc" id="L272">        sortie.println(&quot;Le nombre total de déclarations valides et complètes par l'ordre des Architect: 0&quot;);</span>
+<span class="nc" id="L273">        sortie.println(&quot;Le nombre total de déclarations valides et complètes par l'ordre des Psychologue: 0&quot;);</span>
+<span class="nc" id="L274">        sortie.println(&quot;Le nombre total de déclarations valides et complètes par l'ordre des Geologue: 0&quot;);</span>
+<span class="nc" id="L275">        sortie.println(&quot;Le nombre total de déclarations valides et complètes par l'ordre des Podiatres: 0&quot;);</span>
+<span class="nc" id="L276">        sortie.println(&quot;Le nombre total de déclarations valides et incomplètes par l'ordre des Architect: 0&quot;);</span>
+<span class="nc" id="L277">        sortie.println(&quot;Le nombre total de déclarations valides et incomplètes par l'ordre des Psychologue: 0&quot;);</span>
+<span class="nc" id="L278">        sortie.println(&quot;Le nombre total de déclarations valides et incomplètes par l'ordre des Geologue: 0&quot;);</span>
+<span class="nc" id="L279">        sortie.println(&quot;Le nombre total de déclarations valides et incomplètes par l'ordre des Podiatres: 0&quot;);</span>
+<span class="nc" id="L280">        sortie.println(&quot;Le nombre de déclarations soumises avec un numéro de permis invalide: 0&quot;);</span>
+<span class="nc" id="L281">        sortie.close();</span>
+<span class="nc" id="L282">        ficAEcrire.close();</span>
+<span class="nc" id="L283">    }</span>
+
+    /**
+     * Méthode qui affiche les statistiques sur la console java.
+     * @param cheminFichier emplacement du fichier statistiques.
+     * @throws IOException exception levée si l'activité est invalide.
+     */
+    public static void afficheConsole(String cheminFichier) throws IOException {
+<span class="nc" id="L291">        BufferedReader in = new BufferedReader(new FileReader(cheminFichier));</span>
+<span class="nc" id="L292">        String ligne = in.readLine();</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">        while(ligne != null) {</span>
+<span class="nc" id="L294">            System.out.println(ligne);</span>
+<span class="nc" id="L295">            ligne = in.readLine();</span>
+        }
+<span class="nc" id="L297">        in.close();</span>
+<span class="nc" id="L298">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

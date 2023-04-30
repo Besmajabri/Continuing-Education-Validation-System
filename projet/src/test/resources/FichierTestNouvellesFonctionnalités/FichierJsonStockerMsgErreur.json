@@ -1,0 +1,17 @@
+{
+  "numero_de_permis": "A7689",
+  "cycle": "2016-2018",
+  "heures_transferees_du_cycle_precedent": 2,
+  "ordre": "architectes",
+  "nom": "Jabri",
+  "sexe": 2,
+  "prenom": "Besma",
+  "activites": [
+    {
+      "description": "Rédaction pour le magazine Architecture moderne",
+      "categorie": "cours",
+      "heures": 10,
+      "date": "2017-01-01"
+    }
+  ]
+}
