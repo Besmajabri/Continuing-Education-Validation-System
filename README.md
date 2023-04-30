@@ -65,3 +65,6 @@ Les auteurs du projet :
 * **Besma Jabri** 
 * **Othmane Azzouzi**
 
+# Important Note on Code Conventions
+
+Please be aware that in the source code for this program, variable names, function names, and comments are primarily written in French. We understand that this might pose some challenges for users who are not familiar with the French language. However, We have ensured that the user documentation, such as this README, is written in English for broader accessibility.
