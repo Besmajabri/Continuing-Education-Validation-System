@@ -1,4 +1,4 @@
-# Continuing Education Validation Software
+# Continuing Education Validation System
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-java.svg)](https://forthebadge.com) [![forthebadge](http://forthebadge.com/images/badges/powered-by-electricity.svg)](http://forthebadge.com)
 
