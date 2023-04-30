@@ -41,7 +41,7 @@ If you receive an error message that the `inputfile` folder does not exist:
 
 4. Put the absolute path of the file in the `Principalprog` class on line **7**.
 
-## Using Jacoco
+## Jacoco
 
 To generate a report on the tests of this project, you will use the **Jacoco plugin** as follows:
 
